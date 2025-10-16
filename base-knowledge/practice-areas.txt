@@ -1,0 +1,124 @@
+# Practice Areas & Legal Specializations
+
+## Primary Practice Areas (High-Value)
+
+### Medical Negligence
+- **Cases Generated**: 150+
+- **Average Value**: £250,000+
+- **Conversion Rate**: 18%
+- **Special Features**:
+  - Expert medical review
+  - Complex case qualification
+  - High-value settlements
+  - Specialist marketing
+- **Voice Assistant Focus**: Detailed medical history collection, expert witness requirements
+
+### Immigration Law
+- **Cases Generated**: 200+
+- **Average Value**: £15,000+
+- **Conversion Rate**: 32%
+- **Special Features**:
+  - Urgent case handling
+  - Multi-language support
+  - Document assistance
+  - Government updates
+- **Voice Assistant Focus**: Multi-language support, urgency assessment, document requirements
+
+### Personal Injury
+- **Cases Generated**: 300+
+- **Average Value**: £25,000+
+- **Conversion Rate**: 28%
+- **Special Features**:
+  - Immediate case assessment
+  - Medical evidence gathering
+  - Insurance negotiations
+  - Fast settlements
+- **Voice Assistant Focus**: Accident details, injury documentation, insurance information
+
+### Family Law
+- **Cases Generated**: 100+
+- **Average Value**: £12,000+
+- **Conversion Rate**: 25%
+- **Special Features**:
+  - Sensitive handling
+  - Child welfare focus
+  - Financial planning
+  - Mediation services
+- **Voice Assistant Focus**: Sensitive conversation handling, child custody details
+
+## Secondary Practice Areas
+
+### Employment Law
+- **Cases Generated**: 80+
+- **Average Value**: £20,000+
+- **Conversion Rate**: 22%
+- **Focus**: Unfair dismissal, discrimination, workplace harassment
+
+### Probate & Will Disputes
+- **Cases Generated**: 60+
+- **Average Value**: £50,000+
+- **Conversion Rate**: 15%
+- **Focus**: Contested wills, inheritance disputes, estate administration
+
+### Group Actions & Class Actions
+- **Cases Generated**: 500+
+- **Average Value**: £10,000+
+- **Conversion Rate**: 35%
+- **Focus**: Mass tort litigation, product liability, large-scale compensation
+
+### Criminal Defence
+- **Cases Generated**: 40+
+- **Average Value**: £30,000+
+- **Conversion Rate**: 20%
+- **Focus**: Serious criminal charges, white-collar crime, 24/7 emergency support
+
+### Commercial Litigation
+- **Cases Generated**: 50+
+- **Average Value**: £75,000+
+- **Conversion Rate**: 12%
+- **Focus**: Business disputes, contract breaches, partnership disputes
+
+### Property & Landlord Law
+- **Cases Generated**: 120+
+- **Average Value**: £8,000+
+- **Conversion Rate**: 28%
+- **Focus**: Tenant disputes, eviction proceedings, housing disrepair
+
+## Geographic Coverage
+
+### Primary UK Regions
+- London, Manchester, Birmingham, Leeds, Liverpool
+- Bristol, Sheffield, Newcastle, Nottingham, Leicester
+- Scotland, Wales, Northern Ireland
+- National Coverage available
+
+### Global Service
+- Worldwide law firm coverage
+- Multi-timezone support
+- International legal expertise
+
+## Practice Area Voice Assistant Considerations
+
+### Medical Negligence
+- **Complexity**: High - requires detailed medical history
+- **Sensitivity**: High - medical trauma and loss
+- **Expertise**: Requires medical knowledge for qualification
+- **Documentation**: Extensive medical records needed
+
+### Immigration Law
+- **Languages**: Multi-language support essential
+- **Urgency**: High - time-sensitive applications
+- **Documentation**: Complex visa requirements
+- **Cultural Sensitivity**: Important for international clients
+
+### Personal Injury
+- **Immediacy**: Quick response needed
+- **Documentation**: Accident reports, medical records
+- **Insurance**: Third-party involvement
+- **Timeline**: Statute of limitations awareness
+
+### Family Law
+- **Sensitivity**: Extremely high - emotional situations
+- **Confidentiality**: Critical privacy requirements
+- **Children**: Special considerations for child welfare
+- **Mediation**: Alternative dispute resolution options

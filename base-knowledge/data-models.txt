@@ -1,0 +1,335 @@
+# Data Models & Field Mappings
+
+## Contact Form Data Structure
+
+### Request Clients Form Fields
+```typescript
+interface RequestClientsFormData {
+  // Contact Information
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  firmName: string;
+  
+  // Practice Details
+  practiceArea: string;
+  region: string;
+  firmSize: string;
+  
+  // Service Preferences
+  serviceType: string; // "custom-system" | "ready-leads" | "not-sure"
+  monthlyBudget: string;
+  caseGoal: string;
+  urgency: string;
+  
+  // Current Marketing
+  currentMarketing: string[]; // Array of selected activities
+  
+  // Additional Information
+  additionalInfo: string;
+  consent: boolean;
+  
+  // System Fields
+  source: "Request Clients";
+}
+```
+
+### Contact Form Fields
+```typescript
+interface ContactFormData {
+  // Contact Information
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  firmName: string;
+  
+  // Practice Details
+  practiceArea: string;
+  
+  // Service Preferences
+  urgency: string;
+  budget: string;
+  
+  // Additional Information
+  message: string;
+  
+  // System Fields
+  source: "Contact";
+}
+```
+
+## Practice Area Options
+
+### Primary Practice Areas
+```javascript
+const practiceAreas = [
+  "Medical Negligence",
+  "Immigration Law", 
+  "Personal Injury",
+  "Divorce & Family Law",
+  "Employment Law",
+  "Probate & Will Disputes",
+  "Group Actions / Class Actions",
+  "Criminal Defence",
+  "Commercial Litigation",
+  "Property & Landlord Law",
+  "Other"
+];
+```
+
+### Regional Coverage
+```javascript
+const regions = [
+  "London",
+  "Manchester", 
+  "Birmingham",
+  "Leeds",
+  "Liverpool",
+  "Bristol",
+  "Sheffield",
+  "Newcastle",
+  "Nottingham",
+  "Leicester",
+  "Scotland",
+  "Wales", 
+  "Northern Ireland",
+  "National Coverage",
+  "Other"
+];
+```
+
+### Firm Size Categories
+```javascript
+const firmSizes = [
+  "Solo Practitioner",
+  "2-5 Partners",
+  "6-20 Partners", 
+  "21-50 Partners",
+  "50+ Partners"
+];
+```
+
+## Service Type Mappings
+
+### Service Preferences
+```javascript
+const serviceTypes = {
+  "custom-system": "Build us a custom lead generation system",
+  "ready-leads": "Send us ready-to-go clients", 
+  "not-sure": "Not sure — let's discuss both options"
+};
+```
+
+### Budget Ranges
+```javascript
+const budgetRanges = [
+  "Under £5,000",
+  "£5,000 - £10,000",
+  "£10,000 - £25,000", 
+  "£25,000 - £50,000",
+  "£50,000+",
+  "Flexible based on ROI"
+];
+```
+
+### Case Goals
+```javascript
+const caseGoals = [
+  "1-5 cases",
+  "6-10 cases",
+  "11-20 cases", 
+  "21-50 cases",
+  "50+ cases"
+];
+```
+
+### Urgency Levels
+```javascript
+const urgencyLevels = [
+  "ASAP - We need clients now",
+  "Within 1 month",
+  "2-3 months",
+  "Just planning ahead"
+];
+```
+
+## GoHighLevel Custom Field Mappings
+
+### Field ID Mappings
+```javascript
+const customFieldMappings = {
+  // Practice Information
+  "practice_area": "Primary legal practice area",
+  "practice_region": "Geographic service area", 
+  "firm_size": "Size of law firm",
+  
+  // Service Preferences
+  "needs": "Service type preference",
+  "marketing_budget": "Monthly marketing budget",
+  "cases_monthly": "Target cases per month",
+  "urgency_level": "Timeline urgency",
+  
+  // Current Status
+  "marketing_activities": "Current marketing efforts",
+  "additional_information": "Extra firm details",
+  
+  // Communication
+  "message": "General message or requirements"
+};
+```
+
+### Custom Field Values
+```javascript
+const customFieldValues = {
+  practice_area: [
+    "Medical Negligence", "Immigration Law", "Personal Injury",
+    "Divorce & Family Law", "Employment Law", "Probate & Will Disputes",
+    "Group Actions / Class Actions", "Criminal Defence", 
+    "Commercial Litigation", "Property & Landlord Law", "Other"
+  ],
+  
+  firm_size: [
+    "Solo Practitioner", "2-5 Partners", "6-20 Partners",
+    "21-50 Partners", "50+ Partners"
+  ],
+  
+  urgency_level: [
+    "ASAP - We need clients now", "Within 1 month", 
+    "2-3 months", "Just planning ahead"
+  ],
+  
+  marketing_budget: [
+    "Under £5,000", "£5,000 - £10,000", "£10,000 - £25,000",
+    "£25,000 - £50,000", "£50,000+", "Flexible based on ROI"
+  ]
+};
+```
+
+## Voice Data Collection Schema
+
+### Voice Input Processing
+```typescript
+interface VoiceInputData {
+  // Speech Recognition
+  transcript: string;
+  confidence: number;
+  language: string;
+  
+  // Extracted Entities
+  entities: {
+    practiceArea?: string;
+    urgency?: string;
+    budget?: string;
+    region?: string;
+    firmSize?: string;
+    serviceType?: string;
+  };
+  
+  // Sentiment Analysis
+  sentiment: {
+    score: number; // -1 to 1
+    magnitude: number; // 0 to 1
+    label: "positive" | "negative" | "neutral";
+  };
+  
+  // Call Metadata
+  callDuration: number;
+  timestamp: string;
+  callerId?: string;
+}
+```
+
+### Entity Extraction Patterns
+```javascript
+const entityPatterns = {
+  practiceArea: [
+    /medical negligence|medical malpractice/i,
+    /personal injury|car accident|workplace injury/i,
+    /immigration|visa|asylum|citizenship/i,
+    /family law|divorce|custody|separation/i,
+    /employment|unfair dismissal|discrimination/i,
+    /criminal|criminal defence|court representation/i
+  ],
+  
+  urgency: [
+    /asap|immediately|urgent|right now/i,
+    /within.*month|next month|soon/i,
+    /planning|exploring|considering/i
+  ],
+  
+  budget: [
+    /under.*5.*thousand|less than.*5k/i,
+    /5.*to.*10.*thousand|5k.*to.*10k/i,
+    /10.*to.*25.*thousand|10k.*to.*25k/i,
+    /25.*to.*50.*thousand|25k.*to.*50k/i,
+    /over.*50.*thousand|more than.*50k/i,
+    /performance.*based|pay.*for.*results/i
+  ],
+  
+  region: [
+    /london|manchester|birmingham|leeds|liverpool/i,
+    /bristol|sheffield|newcastle|nottingham|leicester/i,
+    /scotland|wales|northern ireland/i,
+    /national|countrywide|uk.*wide/i
+  ]
+};
+```
+
+## Data Validation Rules
+
+### Required Fields
+```javascript
+const requiredFields = {
+  contact: ["firstName", "lastName", "email"],
+  practice: ["practiceArea"],
+  service: ["serviceType", "urgency"]
+};
+```
+
+### Validation Patterns
+```javascript
+const validationPatterns = {
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  phone: /^(\+44|0)[0-9]{10,11}$/,
+  firmName: /^[a-zA-Z0-9\s&.,'-]+$/,
+  practiceArea: /^[a-zA-Z\s&/'-]+$/
+};
+```
+
+### Data Sanitization
+```javascript
+const sanitizationRules = {
+  trim: ["firstName", "lastName", "email", "phone", "firmName"],
+  toLowerCase: ["email"],
+  capitalize: ["firstName", "lastName", "firmName"],
+  removeSpecialChars: ["phone"] // Keep only numbers and + symbol
+};
+```
+
+## CRM Integration Payload
+
+### Complete Payload Example
+```javascript
+const createContactPayload = {
+  firstName: "John",
+  lastName: "Smith", 
+  email: "john.smith@lawfirm.co.uk",
+  phone: "+44 20 3967 3689",
+  companyName: "Smith & Associates",
+  source: "Website Request Clients Form",
+  locationId: "YOUR_LOCATION_ID",
+  customField: [
+    { id: "practice_area", value: "Personal Injury" },
+    { id: "practice_region", value: "London" },
+    { id: "firm_size", value: "2-5 Partners" },
+    { id: "needs", value: "Build us a custom lead generation system" },
+    { id: "marketing_budget", value: "£10,000 - £25,000" },
+    { id: "cases_monthly", value: "6-10 cases" },
+    { id: "urgency_level", value: "Within 1 month" },
+    { id: "marketing_activities", value: "Google Ads, Referral Programs" },
+    { id: "additional_information", value: "Looking to expand our personal injury practice" }
+  ]
+};
+```

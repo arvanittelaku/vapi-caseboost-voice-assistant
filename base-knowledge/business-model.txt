@@ -1,0 +1,82 @@
+# CaseBoost Knowledge Base
+
+This knowledge base contains essential information for implementing VAPI voice assistants for CaseBoost, a performance-based legal client growth agency.
+
+## Quick Reference
+
+- **Primary Service**: AI-powered legal client acquisition
+- **Target Market**: UK law firms (global service)
+- **Key Practice Areas**: Medical Negligence, Immigration, Personal Injury, Family Law
+- **CRM System**: GoHighLevel API v1
+- **Phone**: 02039673689
+- **Email**: leads@caseboost.io
+
+## Implementation Priority
+
+1. **Phase 1**: Basic lead qualification and contact capture
+2. **Phase 2**: Practice area specialization and intelligent routing
+3. **Phase 3**: Full automation with appointment scheduling and follow-up
+
+## Core Business Model
+
+CaseBoost operates as a **performance-based legal client growth agency** with two primary service offerings:
+
+### 1. Custom Growth Engine (Option 1)
+- **Description**: Complete marketing ecosystem built under client's brand
+- **Includes**: AI intake, PPC campaigns, SEO, website development, CRM automation
+- **Value Proposition**: Long-term asset building and branded growth
+- **Target**: Firms wanting consistent branded growth
+- **Timeline**: 2-4 weeks setup, ongoing optimization
+
+### 2. Instant Qualified Leads (Option 2)
+- **Description**: Pre-qualified, ready-to-close prospects delivered directly
+- **Value Proposition**: No setup, immediate results, pay per qualified lead
+- **Target**: Firms needing immediate volume growth
+- **Delivery**: Daily qualified prospects
+- **Pricing**: Performance-based (pay for results only)
+
+## Service Offerings
+
+### AI Sales & Intake Agents (Most Popular)
+- **24/7 Automated Intake**: Never miss a lead
+- **Smart Lead Qualification**: Advanced algorithms assess case strength
+- **Intelligent Follow-Up**: Automated nurture sequences
+- **Case Booking Automation**: Direct consultation scheduling
+- **Performance**: < 30 sec response time, 95% capture rate, 40%+ conversion increase
+
+### PPC for Law Firms
+- **Platforms**: Google Ads, Meta (Facebook/Instagram), YouTube
+- **Focus**: High-intent legal keywords
+- **Performance**: 3.2x average ROAS, 24% CTR, £2.40 avg CPC
+- **Strategy**: Search campaigns, local service ads, remarketing
+
+### SEO for Law Firms
+- **Services**: Local SEO, content marketing, technical optimization
+- **Timeline**: 12 months to full results
+- **Performance**: 180% avg traffic increase, #1-3 avg ranking
+- **Focus**: Long-term organic growth
+
+### Website Design & Development
+- **Features**: Mobile-first, conversion-optimized, built-in intake
+- **Performance**: Lightning-fast loading, high conversion rates
+- **Integration**: Seamless CRM and lead management
+
+### Lead Management & CRM Automation
+- **Features**: Automated follow-up, lead scoring, pipeline management
+- **Integration**: GoHighLevel CRM system
+- **Performance**: Detailed tracking and optimization
+
+## Pricing Model
+
+- **Performance-Based**: Pay only for qualified leads/cases
+- **90-Day Guarantee**: 3 qualified leads within 90 days or no payment
+- **No Upfront Costs**: Risk-free for law firms
+- **ROI Focus**: Average 3.2x return on ad spend
+
+## Target Market
+
+- **Primary**: UK law firms
+- **Global Service**: Worldwide coverage
+- **Firm Sizes**: Solo practitioners to 50+ partner firms
+- **Budget Ranges**: £5K-£50K+ monthly marketing budgets
+- **Urgency Levels**: Immediate need to planning ahead

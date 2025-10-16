@@ -1,0 +1,167 @@
+# Contact Information & Resources
+
+## CaseBoost Contact Details
+
+### Primary Contact Information
+- **Phone**: 02039673689
+- **Email**: leads@caseboost.io
+- **Website**: https://caseboost.io
+- **Service Area**: Global (UK primary)
+
+### Business Hours
+- **Monday - Friday**: 9:00 AM - 6:00 PM GMT
+- **Response Time**: Within 24 hours
+- **Emergency Support**: Available for urgent inquiries
+
+## Technical Resources
+
+### API Endpoints
+- **GoHighLevel API**: https://rest.gohighlevel.com/v1/
+- **Netlify Functions**: /netlify/functions/
+- **Health Check**: /api/health
+- **Submit Contact**: /api/submit-contact
+
+### Environment Variables
+```bash
+GOHIGHLEVEL_API_KEY=your_api_key_here
+GOHIGHLEVEL_LOCATION_ID=your_location_id_here
+```
+
+### Webhook URLs
+- **VAPI Webhook**: https://your-domain.com/api/vapi-webhook
+- **CRM Integration**: https://your-domain.com/api/crm-sync
+
+## Practice Area Contacts
+
+### Medical Negligence Specialists
+- **Expert Medical Review**: Available
+- **Complex Case Qualification**: Specialized team
+- **High-Value Settlements**: Track record of £250K+ cases
+
+### Immigration Law Specialists
+- **Multi-language Support**: Available
+- **Urgent Case Handling**: 24/7 support
+- **Document Assistance**: Comprehensive support
+
+### Personal Injury Specialists
+- **Immediate Response**: < 30 seconds
+- **No-win-no-fee**: Standard arrangement
+- **Insurance Negotiations**: Expert handling
+
+### Family Law Specialists
+- **Sensitive Handling**: Trained professionals
+- **Child Welfare Focus**: Specialized approach
+- **Mediation Services**: Alternative dispute resolution
+
+## Service Team Contacts
+
+### AI Sales & Intake Team
+- **24/7 Support**: Always available
+- **Technical Issues**: Immediate response
+- **Performance Monitoring**: Continuous optimization
+
+### PPC Management Team
+- **Campaign Optimization**: Daily monitoring
+- **Performance Analysis**: Weekly reports
+- **Budget Management**: Transparent reporting
+
+### SEO Team
+- **Content Strategy**: Monthly planning
+- **Technical Optimization**: Ongoing improvements
+- **Ranking Monitoring**: Weekly updates
+
+### Website Development Team
+- **Design Updates**: As needed
+- **Performance Optimization**: Continuous
+- **Technical Support**: Available
+
+## Emergency Contacts
+
+### Technical Issues
+- **System Outages**: Immediate escalation
+- **API Failures**: 24/7 monitoring
+- **Data Breaches**: Emergency response team
+
+### Legal Issues
+- **Compliance Questions**: Legal team
+- **Regulatory Changes**: Immediate updates
+- **Professional Boundaries**: Clear guidelines
+
+### Client Issues
+- **Service Complaints**: Management team
+- **Billing Questions**: Finance team
+- **Contract Issues**: Legal team
+
+## Documentation Resources
+
+### Internal Documentation
+- **API Documentation**: Complete reference
+- **Integration Guides**: Step-by-step instructions
+- **Troubleshooting Guides**: Common issues and solutions
+- **Compliance Manuals**: Legal requirements and procedures
+
+### External Resources
+- **GoHighLevel Documentation**: https://highlevel.stoplight.io/
+- **VAPI Documentation**: https://docs.vapi.ai/
+- **GDPR Guidelines**: https://ico.org.uk/
+- **Legal Marketing Rules**: SRA guidelines
+
+## Training Resources
+
+### Voice Assistant Training
+- **Conversation Scripts**: Complete library
+- **Practice Area Specialization**: Detailed guides
+- **Objection Handling**: Response strategies
+- **Compliance Training**: Legal requirements
+
+### Technical Training
+- **API Integration**: Hands-on tutorials
+- **Webhook Configuration**: Setup guides
+- **Error Handling**: Debugging procedures
+- **Performance Monitoring**: Analytics training
+
+### Business Training
+- **Service Knowledge**: Complete service overview
+- **Practice Area Expertise**: Legal specialization
+- **Sales Techniques**: Conversion strategies
+- **Customer Service**: Professional standards
+
+## Support Channels
+
+### Primary Support
+- **Email**: leads@caseboost.io
+- **Phone**: 02039673689
+- **Live Chat**: Available on website
+- **Support Portal**: Online ticketing system
+
+### Technical Support
+- **API Issues**: Technical team
+- **Integration Problems**: Development team
+- **Performance Issues**: Optimization team
+- **Security Concerns**: Security team
+
+### Business Support
+- **Service Questions**: Account managers
+- **Billing Issues**: Finance team
+- **Contract Questions**: Legal team
+- **Strategic Planning**: Management team
+
+## Quality Assurance
+
+### Call Monitoring
+- **Regular Reviews**: Weekly call analysis
+- **Quality Scoring**: Performance metrics
+- **Training Updates**: Continuous improvement
+- **Compliance Checks**: Regular audits
+
+### Performance Monitoring
+- **Conversion Rates**: Track and optimize
+- **Customer Satisfaction**: Regular surveys
+- **Response Times**: Monitor and improve
+- **Error Rates**: Track and reduce
+
+### Continuous Improvement
+- **Feedback Collection**: Regular input gathering
+- **Process Optimization**: Ongoing improvements
+- **Technology Updates**: Regular enhancements
+- **Training Programs**: Continuous development
