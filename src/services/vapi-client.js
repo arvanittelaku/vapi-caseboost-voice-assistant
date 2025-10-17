@@ -57,7 +57,8 @@ class VAPIClient {
         voice: config.vapi.voice,
         transcriber: config.vapi.transcriber,
         endCallMessage: config.vapi.endCallMessage,
-        firstMessage: "Hello, this is Sarah from CaseBoost. I'm calling because you've shown interest in growing your legal practice. I'd love to learn about your current challenges and see how we might help you attract more high-value clients. Do you have a few minutes to chat?"
+        firstMessage: "Hello, this is Sarah from CaseBoost. I'm calling because you've shown interest in growing your legal practice. I'd love to learn about your current challenges and see how we might help you attract more high-value clients. Do you have a few minutes to chat?",
+        firstMessageDelayMs: 2500  // 2.5 second delay to ensure user can hear the greeting
       };
 
       const response = await this.client.patch(`/assistant/${assistantId}`, assistantData);
@@ -133,6 +134,10 @@ class VAPIClient {
           last_name: contactData.lastName || 'User',
           email: contactData.email || 'test@example.com',
           firm_name: contactData.firmName || 'Test Law Firm'
+        },
+        // Add delay before first message to ensure user can hear it
+        assistantOverrides: {
+          firstMessageDelayMs: 2500  // 2.5 second delay after call is answered
         }
       };
 
