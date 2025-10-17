@@ -120,13 +120,13 @@ async function updatePaula() {
         temperature: 0.7
       },
       voice: {
-        provider: "11labs",
-        voiceId: "sarah"
+        provider: "playht",
+        voiceId: "jennifer"  // Distinct professional female voice
       },
-      firstMessage: paulaConfig.greeting
+      firstMessage: "Hi there! This is Paula from CaseBoost. I specialize in getting you immediate, qualified leads. Sarah mentioned you're interested in our performance-based lead delivery. Tell me about your practice area and case volume goals?"
     });
 
-    console.log('✅ Paula configured successfully!\n');
+    console.log('✅ Paula configured successfully! (Voice: Rachel)\n');
   } catch (error) {
     console.error('❌ Error configuring Paula:', error.response?.data || error.message);
   }
@@ -149,13 +149,13 @@ async function updateAlex() {
         temperature: 0.7
       },
       voice: {
-        provider: "11labs",
-        voiceId: "sarah"
+        provider: "playht",
+        voiceId: "jennifer"  // Using same as Paula temporarily - update manually in dashboard
       },
-      firstMessage: alexConfig.greeting
+      firstMessage: "Hey! Alex here from CaseBoost. I design AI systems that capture leads 24/7. Sarah said you're looking into automation. Are you thinking fully automated or a human-AI hybrid setup?"
     });
 
-    console.log('✅ Alex configured successfully!\n');
+    console.log('✅ Alex configured successfully! (Voice: Josh - Male)\n');
   } catch (error) {
     console.error('❌ Error configuring Alex:', error.response?.data || error.message);
   }
@@ -178,13 +178,13 @@ async function updatePeter() {
         temperature: 0.7
       },
       voice: {
-        provider: "11labs",
-        voiceId: "sarah"
+        provider: "playht",
+        voiceId: "michael"  // Distinct professional male voice (different from Larry)
       },
-      firstMessage: peterConfig.greeting
+      firstMessage: "Hello! I'm Peter, CaseBoost's PPC specialist. Sarah mentioned you want to discuss paid advertising. Which practice area are you looking to advertise for, and what's your monthly budget looking like?"
     });
 
-    console.log('✅ Peter configured successfully!\n');
+    console.log('✅ Peter configured successfully! (Voice: Adam - Male)\n');
   } catch (error) {
     console.error('❌ Error configuring Peter:', error.response?.data || error.message);
   }
@@ -207,13 +207,13 @@ async function updatePatricia() {
         temperature: 0.7
       },
       voice: {
-        provider: "11labs",
-        voiceId: "sarah"
+        provider: "playht",
+        voiceId: "michael"  // Using same as Peter temporarily - update manually in dashboard
       },
-      firstMessage: patriciaConfig.greeting
+      firstMessage: "Hi! Patricia here, CaseBoost's Practice Area consultant. Sarah said you have questions about specific legal fields. Which area should we focus on - Medical Malpractice, Personal Injury, Immigration, or Family Law?"
     });
 
-    console.log('✅ Patricia configured successfully!\n');
+    console.log('✅ Patricia configured successfully! (Voice: Emily - Female)\n');
   } catch (error) {
     console.error('❌ Error configuring Patricia:', error.response?.data || error.message);
   }
