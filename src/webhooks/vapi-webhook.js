@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const GHLClient = require('../services/ghl-client');
 const SMSClient = require('../services/sms-client');
 const TwilioVoiceService = require('../services/twilio-voice');
+const SubAgentWebhook = require('./sub-agent-webhook');
 
 class WebhookHandler {
   constructor() {
@@ -10,6 +11,7 @@ class WebhookHandler {
     this.ghlClient = new GHLClient();
     this.smsClient = new SMSClient();
     this.twilioVoice = new TwilioVoiceService();
+    this.subAgentWebhook = new SubAgentWebhook();
     this.webhookSecret = process.env.WEBHOOK_SECRET;
     
     this.setupMiddleware();
@@ -52,12 +54,16 @@ class WebhookHandler {
       res.json({ 
         status: 'healthy', 
         timestamp: new Date().toISOString(),
-        service: 'CaseBoost VAPI Webhook Handler'
+        service: 'CaseBoost VAPI Webhook Handler',
+        subAgentsEnabled: true
       });
     });
 
     // VAPI webhooks
     this.app.post('/webhook/vapi', this.handleVAPIWebhook.bind(this));
+    
+    // Sub-agent routing webhooks (NEW)
+    this.app.use('/webhook/sub-agent', this.subAgentWebhook.getRouter());
     
     // GoHighLevel webhooks
     this.app.post('/webhook/ghl', this.handleGHLWebhook.bind(this));
@@ -595,10 +601,14 @@ class WebhookHandler {
       console.log(`🚀 CaseBoost webhook server running on port ${port}`);
       console.log(`📡 Webhook endpoints:`);
       console.log(`   - VAPI: http://localhost:${port}/webhook/vapi`);
+      console.log(`   - Sub-Agent Routing: http://localhost:${port}/webhook/sub-agent/route-sub-agent`);
+      console.log(`   - Sub-Agent Explain: http://localhost:${port}/webhook/sub-agent/explain-routing`);
+      console.log(`   - Sub-Agent Stats: http://localhost:${port}/webhook/sub-agent/routing-stats`);
       console.log(`   - GoHighLevel: http://localhost:${port}/webhook/ghl`);
       console.log(`   - Twilio SMS: http://localhost:${port}/webhook/twilio/sms`);
       console.log(`   - Twilio Voice: http://localhost:${port}/webhook/twilio/voice`);
       console.log(`   - Health Check: http://localhost:${port}/health`);
+      console.log(`\n🤖 Sub-Agents Active: Paula, Alex, Peter, Patricia`);
     });
   }
 }

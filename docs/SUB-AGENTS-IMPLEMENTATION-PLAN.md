@@ -1,4 +1,5 @@
 # 🤖 SUB-AGENTS IMPLEMENTATION PLAN
+
 ## CaseBoost Voice Assistant - Multi-Agent Architecture
 
 ---
@@ -8,12 +9,14 @@
 This document outlines a comprehensive plan to implement **specialized sub-agents** for each CaseBoost service, enhancing the voice assistant's ability to provide expert-level information and guidance across all service areas.
 
 ### Current State
+
 - ✅ Single general-purpose voice assistant (Sarah)
 - ✅ VAPI integration with GPT-4o
 - ✅ General knowledge base covering all services
 - ✅ Basic lead qualification and consultation scheduling
 
 ### Target State
+
 - 🎯 Multi-agent architecture with specialized sub-agents
 - 🎯 Intelligent routing based on service interest
 - 🎯 Deep expertise in each service domain
@@ -27,21 +30,25 @@ This document outlines a comprehensive plan to implement **specialized sub-agent
 ### 1. Sub-Agent Architecture Benefits
 
 **Specialization**
+
 - Each sub-agent becomes an expert in one service area
 - Deeper knowledge and more accurate responses
 - Better handling of complex, service-specific questions
 
 **Scalability**
+
 - Easy to add new services without affecting existing ones
 - Modular updates and improvements
 - Independent testing and optimization
 
 **Performance**
+
 - Parallel processing capabilities
 - Reduced token usage per conversation
 - Faster, more focused responses
 
 **Maintainability**
+
 - Isolated knowledge bases per service
 - Easier debugging and troubleshooting
 - Clear separation of concerns
@@ -51,7 +58,9 @@ This document outlines a comprehensive plan to implement **specialized sub-agent
 After extensive research, here are the viable frameworks:
 
 #### **Option 1: CrewAI** ⭐ RECOMMENDED
+
 **Pros:**
+
 - Built specifically for multi-agent orchestration
 - Role-based agent design (perfect for service specialists)
 - Task delegation and collaboration features
@@ -61,6 +70,7 @@ After extensive research, here are the viable frameworks:
 - Python-based (Node.js wrapper available)
 
 **Cons:**
+
 - Requires additional layer on top of VAPI
 - More complex initial setup
 - Need to maintain agent coordination logic
@@ -68,7 +78,9 @@ After extensive research, here are the viable frameworks:
 **Best For:** Long-term scalability, complex multi-agent workflows
 
 #### **Option 2: LangGraph**
+
 **Pros:**
+
 - Graph-based workflow orchestration
 - Excellent for complex decision trees
 - Built on LangChain (mature ecosystem)
@@ -76,6 +88,7 @@ After extensive research, here are the viable frameworks:
 - Supports conditional routing
 
 **Cons:**
+
 - Steeper learning curve
 - May be overkill for voice applications
 - Less focused on voice-specific needs
@@ -83,7 +96,9 @@ After extensive research, here are the viable frameworks:
 **Best For:** Complex workflows with many decision points
 
 #### **Option 3: Native VAPI + Custom Routing** ⭐ PRAGMATIC CHOICE
+
 **Pros:**
+
 - No additional frameworks needed
 - Works within existing VAPI infrastructure
 - Simpler architecture
@@ -91,6 +106,7 @@ After extensive research, here are the viable frameworks:
 - Easier to debug and maintain
 
 **Cons:**
+
 - Limited to VAPI's capabilities
 - Manual routing logic required
 - Less sophisticated agent collaboration
@@ -100,6 +116,7 @@ After extensive research, here are the viable frameworks:
 ### 3. VAPI Capabilities for Sub-Agent Implementation
 
 **Available Features:**
+
 1. **Custom Function Calls** - Can trigger routing logic via webhooks
 2. **Dynamic System Messages** - Can change agent personality per call
 3. **Metadata Passing** - Can track which sub-agent is active
@@ -107,6 +124,7 @@ After extensive research, here are the viable frameworks:
 5. **Context Management** - Can maintain conversation context
 
 **Limitations:**
+
 - No native sub-agent support
 - Need custom routing layer
 - Assistant switching mid-call may be limited
@@ -154,8 +172,10 @@ After extensive research, here are the viable frameworks:
 Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 
 #### 1. **Mass Tort Marketing Sub-Agent** 🏛️
+
 **Name:** "Marcus" (Mass Tort Specialist)
 **Expertise:**
+
 - Mass tort and class action marketing strategies
 - Multi-plaintiff case management
 - Large-scale client acquisition campaigns
@@ -163,6 +183,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Case aggregation and qualification
 
 **Knowledge Base:**
+
 - Mass tort campaign strategies
 - Client acquisition at scale
 - Legal advertising compliance for group actions
@@ -170,6 +191,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - TV, digital, and traditional media approaches
 
 **Key Capabilities:**
+
 - Explain mass tort marketing process
 - Discuss client volume expectations
 - Address compliance concerns
@@ -178,8 +200,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 2. **Performance Lead Delivery Sub-Agent** 📊
+
 **Name:** "Paula" (Performance Lead Specialist)
 **Expertise:**
+
 - Instant qualified lead delivery
 - Pay-per-lead models
 - Lead quality metrics
@@ -187,6 +211,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - No-setup immediate results
 
 **Knowledge Base:**
+
 - Lead generation methodologies
 - Quality assurance processes
 - Pricing models (per-lead costs)
@@ -194,6 +219,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Success metrics and testimonials
 
 **Key Capabilities:**
+
 - Explain lead delivery process
 - Set volume and timeline expectations
 - Discuss pricing and ROI
@@ -202,8 +228,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 3. **AI Sales & Intake Agents Sub-Agent** 🤖
+
 **Name:** "Alex" (AI Intake Specialist)
 **Expertise:**
+
 - 24/7 AI intake systems
 - Automated lead qualification
 - Response time optimization (<30 sec)
@@ -211,6 +239,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Integration with existing systems
 
 **Knowledge Base:**
+
 - AI intake technology explanation
 - Case capture rate improvements
 - Integration capabilities (CRM, calendars)
@@ -218,6 +247,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - ROI case studies (40%+ conversion increase)
 
 **Key Capabilities:**
+
 - Demo AI intake capabilities (meta!)
 - Explain technical integration
 - Address concerns about automation
@@ -226,8 +256,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 4. **PPC for Law Firms Sub-Agent** 📱
+
 **Name:** "Peter" (PPC Specialist)
 **Expertise:**
+
 - Google Ads for legal services
 - Meta (Facebook/Instagram) advertising
 - YouTube video ads
@@ -235,6 +267,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Performance optimization (3.2x ROAS)
 
 **Knowledge Base:**
+
 - PPC platform strategies (Google, Meta, YouTube)
 - Budget recommendations by practice area
 - Performance benchmarks (CTR, CPC, ROAS)
@@ -242,6 +275,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Ad compliance for legal services
 
 **Key Capabilities:**
+
 - Explain PPC strategy for their practice area
 - Provide budget recommendations
 - Share performance benchmarks
@@ -250,8 +284,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 5. **SEO for Law Firms Sub-Agent** 🔍
+
 **Name:** "Samantha" (SEO Specialist)
 **Expertise:**
+
 - Local SEO for law firms
 - Content marketing strategies
 - Technical SEO optimization
@@ -259,6 +295,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Ranking improvements (avg #1-3)
 
 **Knowledge Base:**
+
 - Local SEO best practices
 - Content strategy for legal topics
 - Timeline expectations (12 months)
@@ -266,6 +303,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Competitive analysis approaches
 
 **Key Capabilities:**
+
 - Explain SEO process and timeline
 - Set realistic expectations (long-term)
 - Discuss content requirements
@@ -274,8 +312,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 6. **Website Design & Development Sub-Agent** 💻
+
 **Name:** "Whitney" (Web Design Specialist)
 **Expertise:**
+
 - Conversion-optimized legal websites
 - Mobile-first design
 - Built-in intake forms
@@ -283,6 +323,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Performance optimization
 
 **Knowledge Base:**
+
 - Design best practices for law firms
 - Conversion optimization techniques
 - Mobile responsiveness importance
@@ -290,6 +331,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Timeline and pricing
 
 **Key Capabilities:**
+
 - Discuss website requirements
 - Explain conversion optimization
 - Address technical questions
@@ -298,8 +340,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 7. **Lead Management & CRM Sub-Agent** 📋
+
 **Name:** "Laura" (CRM Specialist)
 **Expertise:**
+
 - GoHighLevel CRM implementation
 - Automated follow-up sequences
 - Lead scoring and qualification
@@ -307,6 +351,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Integration with other systems
 
 **Knowledge Base:**
+
 - CRM automation capabilities
 - Follow-up sequence best practices
 - Lead scoring methodologies
@@ -314,6 +359,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Integration options
 
 **Key Capabilities:**
+
 - Explain CRM automation benefits
 - Demo workflow capabilities
 - Discuss integration requirements
@@ -322,8 +368,10 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ---
 
 #### 8. **Practice Area Specialist Sub-Agent** ⚖️
+
 **Name:** "Patricia" (Practice Area Consultant)
 **Expertise:**
+
 - Deep knowledge of each practice area
 - Medical Malpractice, Immigration, Personal Injury, Divorce & Family Law
 - Case value expectations
@@ -331,6 +379,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Compliance and ethical considerations
 
 **Knowledge Base:**
+
 - Detailed practice area information
 - Average case values (£250K+ for Med Mal, etc.)
 - Client acquisition challenges per area
@@ -338,6 +387,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 - Success stories by practice area
 
 **Key Capabilities:**
+
 - Provide practice-specific insights
 - Discuss case value expectations
 - Share relevant success stories
@@ -350,6 +400,7 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 ### Primary Agent (Sarah) - The Router
 
 **Responsibilities:**
+
 1. Greet the caller warmly
 2. Ask open-ended discovery questions
 3. Identify primary service interest through keywords
@@ -357,29 +408,31 @@ Based on CaseBoost services, we'll implement **8 specialized sub-agents**:
 5. Seamless handoff to sub-agent
 
 **Example Flow:**
+
 ```
-Sarah: "Hello, this is Sarah from CaseBoost. I understand you're interested 
-in growing your legal practice. Could you tell me a bit about what you're 
+Sarah: "Hello, this is Sarah from CaseBoost. I understand you're interested
+in growing your legal practice. Could you tell me a bit about what you're
 looking for?"
 
 Prospect: "We want to get more personal injury cases immediately."
 
-Sarah: "Fantastic! It sounds like our Performance Lead Delivery service 
-might be perfect for you. Let me connect you with Paula, our lead delivery 
-specialist who can explain exactly how we deliver qualified personal injury 
+Sarah: "Fantastic! It sounds like our Performance Lead Delivery service
+might be perfect for you. Let me connect you with Paula, our lead delivery
+specialist who can explain exactly how we deliver qualified personal injury
 cases daily. One moment..."
 
 [HANDOFF TO PAULA - PERFORMANCE LEAD DELIVERY SUB-AGENT]
 
-Paula: "Hi there! Sarah mentioned you're looking for immediate personal 
-injury cases. I'd love to tell you about our performance-based lead 
-delivery. We deliver pre-qualified, ready-to-close PI cases directly to 
+Paula: "Hi there! Sarah mentioned you're looking for immediate personal
+injury cases. I'd love to tell you about our performance-based lead
+delivery. We deliver pre-qualified, ready-to-close PI cases directly to
 your firm. How many new cases are you looking to take on per month?"
 ```
 
 ### Keyword Detection for Routing
 
 **Service Keywords:**
+
 - **Mass Tort:** "mass tort", "class action", "group cases", "large volume", "pharmaceutical"
 - **Performance Leads:** "immediate leads", "buy leads", "quick results", "ready to close", "no setup"
 - **AI Intake:** "AI", "automation", "24/7", "intake", "response time", "chatbot"
@@ -392,6 +445,7 @@ your firm. How many new cases are you looking to take on per month?"
 ### Handoff Protocol
 
 **Technical Implementation:**
+
 1. Primary agent identifies service intent
 2. Calls webhook function: `route_to_sub_agent(service_type, context)`
 3. System updates conversation metadata
@@ -400,6 +454,7 @@ your firm. How many new cases are you looking to take on per month?"
 6. Conversation continues seamlessly
 
 **User Experience:**
+
 - Smooth transition ("Let me connect you with our specialist...")
 - Context preservation (no repeating information)
 - Consistent brand voice across agents
@@ -412,6 +467,7 @@ your firm. How many new cases are you looking to take on per month?"
 ### **Approach A: Native VAPI with Dynamic System Messages** ⭐ RECOMMENDED
 
 **How It Works:**
+
 - Use VAPI's custom function calling to detect service interest
 - Webhook receives service type and returns appropriate system message
 - System message dynamically loads sub-agent personality and knowledge
@@ -431,6 +487,7 @@ your firm. How many new cases are you looking to take on per month?"
 ❌ Single knowledge base (need smart organization)
 
 **Implementation Steps:**
+
 1. Create sub-agent personality configs
 2. Implement routing webhook endpoint
 3. Add function call definition for routing
@@ -445,6 +502,7 @@ your firm. How many new cases are you looking to take on per month?"
 ### **Approach B: CrewAI Orchestration Layer**
 
 **How It Works:**
+
 - Build CrewAI layer between caller and VAPI
 - CrewAI manages multiple specialized agents
 - Each agent has own knowledge base and tools
@@ -466,6 +524,7 @@ your firm. How many new cases are you looking to take on per month?"
 ❌ Steeper learning curve
 
 **Implementation Steps:**
+
 1. Set up CrewAI environment
 2. Create agent definitions for each service
 3. Build routing and coordination logic
@@ -482,6 +541,7 @@ your firm. How many new cases are you looking to take on per month?"
 ### **Approach C: Hybrid - VAPI + Lightweight Orchestrator**
 
 **How It Works:**
+
 - Custom lightweight orchestrator (Node.js)
 - Manages agent state and routing
 - Uses VAPI for voice interface
@@ -501,6 +561,7 @@ your firm. How many new cases are you looking to take on per month?"
 ❌ Still adds infrastructure complexity
 
 **Implementation Steps:**
+
 1. Design orchestrator architecture
 2. Build routing engine
 3. Create agent state management
@@ -520,6 +581,7 @@ your firm. How many new cases are you looking to take on per month?"
 **Goal:** Implement basic sub-agent routing without major architecture changes
 
 **Tasks:**
+
 1. ✅ Create sub-agent personality profiles (8 agents)
 2. ✅ Organize knowledge base by sub-agent
 3. ✅ Implement routing webhook with keyword detection
@@ -528,12 +590,14 @@ your firm. How many new cases are you looking to take on per month?"
 6. ✅ Monitor and refine keyword detection
 
 **Deliverables:**
+
 - 8 sub-agent profiles with personalities
 - Routing webhook endpoint
 - Updated knowledge base structure
 - Basic routing functionality
 
 **Success Metrics:**
+
 - 90%+ accurate routing to correct sub-agent
 - Smooth transitions between agents
 - No increase in call duration
@@ -546,6 +610,7 @@ your firm. How many new cases are you looking to take on per month?"
 **Goal:** Improve routing intelligence and context preservation
 
 **Tasks:**
+
 1. ✅ Implement conversation memory across transitions
 2. ✅ Add confidence scoring to routing decisions
 3. ✅ Create fallback to primary agent for ambiguous queries
@@ -554,12 +619,14 @@ your firm. How many new cases are you looking to take on per month?"
 6. ✅ A/B test different sub-agent personalities
 
 **Deliverables:**
+
 - Context preservation system
 - Analytics dashboard for sub-agent performance
 - Multi-service handling logic
 - Refined agent personalities
 
 **Success Metrics:**
+
 - 95%+ routing accuracy
 - <5% context loss during transitions
 - Measurable conversion improvement per agent
@@ -572,6 +639,7 @@ your firm. How many new cases are you looking to take on per month?"
 **Goal:** Optimize performance and prepare for scale
 
 **Tasks:**
+
 1. ✅ Performance optimization (reduce latency)
 2. ✅ Implement caching for common queries
 3. ✅ Create sub-agent training materials
@@ -580,6 +648,7 @@ your firm. How many new cases are you looking to take on per month?"
 6. ✅ Prepare for potential CrewAI migration path
 
 **Deliverables:**
+
 - Optimized routing performance
 - Comprehensive documentation
 - Monitoring dashboard
@@ -587,6 +656,7 @@ your firm. How many new cases are you looking to take on per month?"
 - Migration plan for future enhancements
 
 **Success Metrics:**
+
 - <200ms routing decision time
 - 99%+ uptime
 - Clear performance metrics per agent
@@ -597,12 +667,14 @@ your firm. How many new cases are you looking to take on per month?"
 ### **Phase 4 (Future): CrewAI Migration (Optional)**
 
 **When to Consider:**
+
 - Need for complex multi-turn agent collaboration
 - Requirement for agents to work together on complex tasks
 - Need for more sophisticated memory and context management
 - Scaling beyond 8-10 agents
 
 **Migration Path:**
+
 1. Keep existing system running
 2. Build CrewAI layer in parallel
 3. Migrate one sub-agent at a time
@@ -616,6 +688,7 @@ your firm. How many new cases are you looking to take on per month?"
 ### Step 1: Create Sub-Agent Profiles
 
 **File Structure:**
+
 ```
 src/
 ├── config/
@@ -633,6 +706,7 @@ src/
 ```
 
 **Sub-Agent Profile Template:**
+
 ```javascript
 module.exports = {
   name: "Marcus",
@@ -642,26 +716,27 @@ module.exports = {
     "Mass tort marketing campaigns",
     "Class action client acquisition",
     "Multi-plaintiff case management",
-    "Compliance for group advertising"
+    "Compliance for group advertising",
   ],
-  greeting: "Hi! I'm Marcus, CaseBoost's mass tort marketing specialist. Sarah mentioned you're interested in scaling up with mass tort cases. I'd love to tell you about our large-scale client acquisition strategies. What type of mass tort work are you focusing on?",
+  greeting:
+    "Hi! I'm Marcus, CaseBoost's mass tort marketing specialist. Sarah mentioned you're interested in scaling up with mass tort cases. I'd love to tell you about our large-scale client acquisition strategies. What type of mass tort work are you focusing on?",
   systemMessage: `You are Marcus, a mass tort marketing specialist at CaseBoost...`,
   knowledgeFiles: [
     "mass-tort-marketing.txt",
     "compliance.txt",
-    "case-studies-mass-tort.txt"
+    "case-studies-mass-tort.txt",
   ],
   qualificationQuestions: [
     "What type of mass tort cases are you interested in?",
     "Have you handled mass tort cases before?",
     "What volume of clients are you looking to acquire?",
-    "What's your timeline for launching campaigns?"
+    "What's your timeline for launching campaigns?",
   ],
   keyMetrics: {
     avgClientVolume: "500-2000 per campaign",
     campaignDuration: "3-12 months",
-    avgROI: "5-10x"
-  }
+    avgROI: "5-10x",
+  },
 };
 ```
 
@@ -672,38 +747,39 @@ module.exports = {
 **Endpoint:** `/webhook/route-sub-agent`
 
 **Logic:**
+
 ```javascript
-const routingConfig = require('../config/routing-config');
+const routingConfig = require("../config/routing-config");
 
 async function routeToSubAgent(req, res) {
   const { conversation, userMessage, currentContext } = req.body;
-  
+
   // Analyze user message for service intent
   const serviceIntent = detectServiceIntent(userMessage);
-  
+
   // Load appropriate sub-agent config
   const subAgent = loadSubAgentConfig(serviceIntent);
-  
+
   // Return sub-agent system message and greeting
   res.json({
     subAgent: subAgent.name,
     systemMessage: subAgent.systemMessage,
     greeting: subAgent.greeting,
-    knowledgeFiles: subAgent.knowledgeFiles
+    knowledgeFiles: subAgent.knowledgeFiles,
   });
 }
 
 function detectServiceIntent(message) {
   const keywords = routingConfig.keywords;
-  
+
   // Check for each service type
   for (const [service, terms] of Object.entries(keywords)) {
-    if (terms.some(term => message.toLowerCase().includes(term))) {
+    if (terms.some((term) => message.toLowerCase().includes(term))) {
       return service;
     }
   }
-  
-  return 'general'; // Default to primary agent
+
+  return "general"; // Default to primary agent
 }
 ```
 
@@ -757,6 +833,7 @@ Add to `assistant-config.js`:
 ### Step 4: Organize Knowledge Base
 
 **Current Structure:**
+
 ```
 base-knowledge/
 ├── brand-guidelines.txt
@@ -766,6 +843,7 @@ base-knowledge/
 ```
 
 **New Structure:**
+
 ```
 base-knowledge/
 ├── general/
@@ -797,21 +875,25 @@ base-knowledge/
 ### Step 5: Testing Strategy
 
 **Unit Tests:**
+
 - Test keyword detection accuracy
 - Verify sub-agent config loading
 - Validate webhook responses
 
 **Integration Tests:**
+
 - End-to-end routing flow
 - Context preservation across transitions
 - Multiple service interest handling
 
 **User Acceptance Testing:**
+
 - Real call testing with various scenarios
 - Feedback collection
 - Refinement based on results
 
 **Test Scenarios:**
+
 1. Clear single-service interest
 2. Multiple service interests
 3. Ambiguous inquiries
@@ -823,21 +905,25 @@ base-knowledge/
 ## 📈 SUCCESS METRICS & KPIs
 
 ### Routing Performance
+
 - **Routing Accuracy:** 90%+ correct sub-agent selection
 - **Routing Speed:** <200ms decision time
 - **Context Preservation:** <5% information loss
 
 ### User Experience
+
 - **Call Completion Rate:** >85%
 - **Conversation Satisfaction:** >4.5/5
 - **Perceived Expertise:** >90% confident in specialist knowledge
 
 ### Conversion Impact
+
 - **Consultation Booking Rate:** +20% vs. baseline
 - **Qualified Lead Rate:** +15% vs. baseline
 - **Service-Specific Conversion:** Tracked per sub-agent
 
 ### Operational
+
 - **System Uptime:** 99.5%+
 - **Average Response Time:** <2 seconds
 - **Error Rate:** <1%
@@ -847,40 +933,50 @@ base-knowledge/
 ## 🚨 RISKS & MITIGATION
 
 ### Risk 1: Routing Errors
+
 **Impact:** User sent to wrong specialist
 **Mitigation:**
+
 - Robust keyword detection with confidence scoring
 - Fallback to primary agent if confidence <70%
 - Easy return path if mismatch detected
 - Continuous monitoring and refinement
 
 ### Risk 2: Context Loss During Transition
+
 **Impact:** Poor user experience, repeated questions
 **Mitigation:**
+
 - Implement conversation memory system
 - Pass context summary during handoff
 - Sub-agent references previous conversation
 - Test extensively before deployment
 
 ### Risk 3: Increased Complexity
+
 **Impact:** Harder to maintain and debug
 **Mitigation:**
+
 - Clear documentation
 - Modular code structure
 - Comprehensive logging
 - Monitoring dashboard
 
 ### Risk 4: Performance Degradation
+
 **Impact:** Slower response times
 **Mitigation:**
+
 - Optimize routing logic
 - Cache common decisions
 - Monitor latency closely
 - Have rollback plan ready
 
 ### Risk 5: Inconsistent Brand Voice
+
 **Impact:** Confusing or off-brand interactions
 **Mitigation:**
+
 - Consistent personality guidelines
 - Shared brand guidelines across agents
 - Regular QA reviews
@@ -891,24 +987,28 @@ base-knowledge/
 ## 💰 COST-BENEFIT ANALYSIS
 
 ### Development Costs
+
 - **Phase 1:** 80-100 hours (2-3 weeks @ 1 developer)
 - **Phase 2:** 60-80 hours (1.5-2 weeks)
 - **Phase 3:** 40-60 hours (1-1.5 weeks)
 - **Total:** 180-240 hours (~6 weeks)
 
 ### Ongoing Costs
+
 - **Maintenance:** 10-15 hours/month
 - **Knowledge base updates:** 5-10 hours/month
 - **Monitoring:** 5 hours/month
 - **Total:** 20-30 hours/month
 
 ### Expected Benefits
+
 - **Conversion Rate:** +15-25% (industry benchmark)
 - **Lead Quality:** +20% (better qualification)
 - **Customer Satisfaction:** +30% (specialist expertise)
 - **Operational Efficiency:** +40% (automated routing)
 
 ### ROI Projection
+
 - **Baseline:** 100 calls/month, 20% conversion = 20 consultations
 - **With Sub-Agents:** 100 calls/month, 25% conversion = 25 consultations
 - **Additional Revenue:** 5 extra consultations/month
@@ -921,16 +1021,19 @@ base-knowledge/
 ### Immediate Actions Required
 
 1. **Framework Decision**
+
    - [ ] Review all three approaches
    - [ ] Decide: Native VAPI vs CrewAI vs Hybrid
    - [ ] Confirm timeline expectations
 
 2. **Resource Allocation**
+
    - [ ] Assign development team/developer
    - [ ] Allocate 6-8 weeks for Phase 1-3
    - [ ] Set up project tracking
 
 3. **Knowledge Base Expansion**
+
    - [ ] Identify gaps in current knowledge base
    - [ ] Create sub-agent-specific content
    - [ ] Organize files by agent
@@ -945,6 +1048,7 @@ base-knowledge/
 1. **Timeline:** Is 6-8 week timeline acceptable, or do we need faster deployment?
 
 2. **Approach:** Do you prefer:
+
    - **Option A:** Quick implementation (Native VAPI) - 2-3 weeks
    - **Option B:** Full-featured (CrewAI) - 6-8 weeks
    - **Option C:** Balanced (Hybrid) - 4-5 weeks
@@ -960,6 +1064,7 @@ base-knowledge/
 ## 📚 APPENDIX
 
 ### A. Glossary
+
 - **Sub-Agent:** Specialized AI agent focused on one service area
 - **Routing:** Process of directing conversation to appropriate sub-agent
 - **Handoff:** Transition from one agent to another
@@ -967,13 +1072,16 @@ base-knowledge/
 - **System Message:** Instructions that define agent personality and behavior
 
 ### B. References
+
 - CrewAI Documentation: https://docs.crewai.com
 - LangGraph Documentation: https://langchain-ai.github.io/langgraph/
 - VAPI API Documentation: https://docs.vapi.ai
 - Multi-Agent Systems Research Papers
 
 ### C. Contact Information
+
 For questions about this implementation plan:
+
 - Technical Lead: [To be assigned]
 - Project Manager: [To be assigned]
 - Product Owner: [To be assigned]
@@ -984,4 +1092,3 @@ For questions about this implementation plan:
 **Last Updated:** October 17, 2024  
 **Status:** Pending Approval  
 **Next Review:** Upon stakeholder feedback
-

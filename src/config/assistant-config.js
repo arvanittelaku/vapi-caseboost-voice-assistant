@@ -195,6 +195,39 @@ Maintain a professional, consultative tone. Focus on understanding their needs b
     {
       type: "function",
       function: {
+        name: "route_to_specialist",
+        description: "Route conversation to a specialized sub-agent based on service interest. Call this when you detect specific service needs (performance leads, AI intake, PPC advertising, or practice area questions).",
+        parameters: {
+          type: "object",
+          properties: {
+            userMessage: {
+              type: "string",
+              description: "The user's complete message that triggered the routing"
+            },
+            conversationId: {
+              type: "string",
+              description: "The current conversation ID"
+            },
+            metadata: {
+              type: "object",
+              description: "Additional context about the conversation",
+              properties: {
+                firstName: { type: "string" },
+                lastName: { type: "string" },
+                practiceArea: { type: "string" },
+                firmName: { type: "string" },
+                currentAgent: { type: "string" },
+                conversationSummary: { type: "string" }
+              }
+            }
+          },
+          required: ["userMessage"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
         name: "update_lead_status",
         description: "Updates lead status and next action in CRM",
         parameters: {

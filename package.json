@@ -10,6 +10,9 @@
     "test": "node scripts/test.js",
     "test-sms": "node scripts/test.js sms",
     "test-vapi-call": "node scripts/test.js vapi-call",
+    "test-sub-agents": "node scripts/test-sub-agents.js all",
+    "test-routing": "node scripts/test-sub-agents.js routing",
+    "test-intent": "node scripts/test-sub-agents.js intent",
     "generate-agent": "node scripts/generate-agent.js",
     "generate-template": "node scripts/generate-agent.js template"
   },
