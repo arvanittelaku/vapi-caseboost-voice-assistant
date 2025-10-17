@@ -19,13 +19,23 @@ Before we begin, I'd like to understand your practice better. What type of legal
 
 ## Service Preference Discovery
 
-### Custom System vs Ready Leads
+### Custom System vs Ready Leads (How It Works)
 ```
-"I understand you practice [PRACTICE_AREA]. We offer two ways to help law firms like yours:
+"I understand you practice [PRACTICE_AREA]. We offer two ways to help law firms like yours grow:
 
-Option 1: We build a complete marketing system under your brand - including AI intake, PPC campaigns, SEO, and website development. This gives you long-term ownership and branded growth.
+Option 1: Custom Growth Engine - We build a complete marketing system under your brand:
+  Step 1: We build your lead engine with AI intake, targeted campaigns, and landing pages
+  Step 2: You approve the flow and qualification criteria
+  Step 3: You get ready-to-close leads delivered directly
+  This gives you long-term ownership and branded growth.
 
-Option 2: We deliver pre-qualified, ready-to-close clients directly to your firm. No setup required - you just receive qualified prospects.
+Option 2: Instant Qualified Leads - We deliver pre-qualified, ready-to-close clients directly to your firm:
+  - No setup required
+  - Pre-screened prospects
+  - Pay only per qualified lead
+  - Immediate results
+
+We also offer specialized Mass Tort Marketing for group actions and class action cases.
 
 Which approach sounds more appealing for your firm right now?"
 ```
