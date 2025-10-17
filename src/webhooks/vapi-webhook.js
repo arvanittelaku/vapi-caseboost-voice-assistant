@@ -4,6 +4,7 @@ const GHLClient = require('../services/ghl-client');
 const SMSClient = require('../services/sms-client');
 const TwilioVoiceService = require('../services/twilio-voice');
 const SubAgentWebhook = require('./sub-agent-webhook');
+const TransferWebhook = require('./transfer-webhook');
 
 class WebhookHandler {
   constructor() {
@@ -12,6 +13,7 @@ class WebhookHandler {
     this.smsClient = new SMSClient();
     this.twilioVoice = new TwilioVoiceService();
     this.subAgentWebhook = new SubAgentWebhook();
+    this.transferWebhook = new TransferWebhook();
     this.webhookSecret = process.env.WEBHOOK_SECRET;
     
     this.setupMiddleware();
@@ -62,7 +64,10 @@ class WebhookHandler {
     // VAPI webhooks
     this.app.post('/webhook/vapi', this.handleVAPIWebhook.bind(this));
     
-    // Sub-agent routing webhooks (NEW)
+    // Transfer webhook (for Squad transfers)
+    this.app.use('/webhook/vapi', this.transferWebhook.getRouter());
+    
+    // Sub-agent routing webhooks (legacy, kept for reference)
     this.app.use('/webhook/sub-agent', this.subAgentWebhook.getRouter());
     
     // GoHighLevel webhooks

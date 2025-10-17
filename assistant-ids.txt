@@ -1,0 +1,12 @@
+# CaseBoost Squad Assistant IDs
+
+Sarah (Primary): 87bbafd3-e24d-4de6-ac76-9ec93d180571
+Paula (Performance Leads): 8c09f5c7-c1f8-4015-b632-19b51456b522
+Alex (AI Intake): c27cd255-230c-4a00-bd0d-8fb0dd97976a
+Peter (PPC): 11a75fe5-0bbf-4c09-99bc-548830cd6af8
+Patricia (Practice Areas): e3152d1f-4e00-44f3-a5de-5125bbde4cc6
+
+VAPI API Key: c4b1fe40-f188-4a21-b405-91b3119f6a3f
+
+Configuration Date: October 17, 2024
+
