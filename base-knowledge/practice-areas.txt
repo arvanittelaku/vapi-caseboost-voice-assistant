@@ -2,7 +2,7 @@
 
 ## Primary Practice Areas (High-Value)
 
-### Medical Negligence
+### Medical Malpractice (Medical Negligence)
 - **Cases Generated**: 150+
 - **Average Value**: £250,000+
 - **Conversion Rate**: 18%
@@ -35,7 +35,7 @@
   - Fast settlements
 - **Voice Assistant Focus**: Accident details, injury documentation, insurance information
 
-### Family Law
+### Divorce & Family Law
 - **Cases Generated**: 100+
 - **Average Value**: £12,000+
 - **Conversion Rate**: 25%
@@ -99,7 +99,7 @@
 
 ## Practice Area Voice Assistant Considerations
 
-### Medical Negligence
+### Medical Malpractice
 - **Complexity**: High - requires detailed medical history
 - **Sensitivity**: High - medical trauma and loss
 - **Expertise**: Requires medical knowledge for qualification
@@ -117,7 +117,7 @@
 - **Insurance**: Third-party involvement
 - **Timeline**: Statute of limitations awareness
 
-### Family Law
+### Divorce & Family Law
 - **Sensitivity**: Extremely high - emotional situations
 - **Confidentiality**: Critical privacy requirements
 - **Children**: Special considerations for child welfare

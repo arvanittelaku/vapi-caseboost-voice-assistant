@@ -162,10 +162,10 @@ The assistant is configured in `src/config/assistant-config.js` with:
 
 **High-Value Practice Areas:**
 
-- Medical Negligence (£250K+ average case value)
+- Medical Malpractice (£250K+ average case value)
 - Immigration Law (£15K+ average case value)
 - Personal Injury (£25K+ average case value)
-- Family Law (£12K+ average case value)
+- Divorce & Family Law (£12K+ average case value)
 
 **Secondary Practice Areas:**
 
@@ -342,4 +342,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **CaseBoost Voice Assistant** - Transforming legal client acquisition through AI-powered voice technology.
 
-For more information, visit [CaseBoost.co.uk](https://caseboost.co.uk) or contact us at contact@caseboost.co.uk.
+For more information, visit [CaseBoost](https://caseboost.netlify.app) or contact us at leads@caseboost.io.

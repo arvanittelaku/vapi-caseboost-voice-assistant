@@ -10,10 +10,10 @@ Before we begin, I'd like to understand your practice better. What type of legal
 ```
 
 ### Practice Area Detection Keywords
-- **Medical Negligence**: "medical malpractice", "medical error", "hospital negligence", "doctor mistake"
+- **Medical Malpractice**: "medical malpractice", "medical negligence", "medical error", "hospital negligence", "doctor mistake"
 - **Personal Injury**: "car accident", "workplace injury", "slip and fall", "personal injury"
 - **Immigration**: "visa application", "asylum", "immigration", "citizenship", "deportation"
-- **Family Law**: "divorce", "custody", "family law", "separation", "domestic violence"
+- **Divorce & Family Law**: "divorce", "custody", "family law", "separation", "domestic violence", "child custody"
 - **Employment**: "unfair dismissal", "discrimination", "workplace harassment", "employment tribunal"
 - **Criminal**: "criminal defence", "criminal charges", "court representation", "criminal law"
 
@@ -73,15 +73,15 @@ Which approach sounds more appealing for your firm right now?"
 
 ## Practice Area Specific Flows
 
-### Medical Negligence Flow
+### Medical Malpractice Flow
 ```
-"I see you handle medical negligence cases. These are often complex and high-value. 
+"I see you handle medical malpractice cases. These are often complex and high-value. 
 
 A few questions to better understand your needs:
-- What types of medical negligence cases do you typically handle?
+- What types of medical malpractice cases do you typically handle?
 - Do you work with medical experts for case review?
-- What's the average value of your medical negligence settlements?
-- How quickly do you need to respond to potential medical negligence inquiries?"
+- What's the average value of your medical malpractice settlements?
+- How quickly do you need to respond to potential medical malpractice inquiries?"
 ```
 
 ### Immigration Law Flow

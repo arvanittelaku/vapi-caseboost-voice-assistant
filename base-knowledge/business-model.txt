@@ -6,7 +6,7 @@ This knowledge base contains essential information for implementing VAPI voice a
 
 - **Primary Service**: AI-powered legal client acquisition
 - **Target Market**: UK law firms (global service)
-- **Key Practice Areas**: Medical Negligence, Immigration, Personal Injury, Family Law
+- **Key Practice Areas**: Medical Malpractice, Immigration, Personal Injury, Divorce & Family Law
 - **CRM System**: GoHighLevel API v1
 - **Phone**: 02039673689
 - **Email**: leads@caseboost.io
@@ -65,6 +65,18 @@ CaseBoost operates as a **performance-based legal client growth agency** with tw
 - **Features**: Automated follow-up, lead scoring, pipeline management
 - **Integration**: GoHighLevel CRM system
 - **Performance**: Detailed tracking and optimization
+
+### Performance Lead Delivery
+- **Description**: Pre-qualified leads delivered daily
+- **Target**: Firms needing immediate cases
+- **Process**: Ready-to-close prospects sent directly
+- **Pricing**: Pay per qualified lead
+
+### Mass Tort Marketing
+- **Description**: Specialized marketing for mass tort cases
+- **Focus**: Group actions and class action lawsuits
+- **Scale**: Large-volume lead generation
+- **Performance**: High-volume case acquisition
 
 ## Pricing Model
 

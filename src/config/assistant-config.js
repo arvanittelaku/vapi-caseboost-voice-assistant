@@ -10,8 +10,8 @@ module.exports = {
   businessModel: "Performance-based legal client growth",
   pricingRange: "Performance-based pricing (pay only for results)",
   consultationDuration: "30 minutes",
-  companyWebsite: "https://caseboost.co.uk",
-  contactEmail: "contact@caseboost.co.uk",
+  companyWebsite: "https://caseboost.netlify.app",
+  contactEmail: "leads@caseboost.io",
   phoneNumber: "02039673689",
   timezone: "GMT",
   businessHours: "9:00 AM - 6:00 PM GMT",
@@ -71,7 +71,7 @@ module.exports = {
   // Practice Areas (High-Value Focus)
   practiceAreas: [
     {
-      name: "Medical Negligence",
+      name: "Medical Malpractice",
       averageValue: "£250K+",
       casesCompleted: "150+",
       priority: "High"
@@ -89,7 +89,7 @@ module.exports = {
       priority: "High"
     },
     {
-      name: "Family Law",
+      name: "Divorce & Family Law",
       averageValue: "£12K+",
       casesCompleted: "100+",
       priority: "High"
@@ -130,10 +130,10 @@ Key information about CaseBoost:
 - 500+ cases generated, £2.5M+ client revenue
 - 95% client retention rate
 - 24/7 AI intake agents with <30 second response time
-- Specializes in high-value practice areas: Medical Negligence (£250K+ avg), Immigration Law (£15K+ avg), Personal Injury (£25K+ avg), Family Law (£12K+ avg)
+- Specializes in high-value practice areas: Medical Malpractice (£250K+ avg), Immigration Law (£15K+ avg), Personal Injury (£25K+ avg), Divorce & Family Law (£12K+ avg)
 - Services: AI Sales & Intake Agents, Custom Growth Engine, Instant Qualified Leads, PPC (3.2x ROAS), SEO
 - UK-based with global reach
-- Phone: 02039673689, Email: contact@caseboost.co.uk
+- Phone: 02039673689, Email: leads@caseboost.io
 
 Maintain a professional, consultative tone. Focus on understanding their needs before presenting solutions.`
         }
