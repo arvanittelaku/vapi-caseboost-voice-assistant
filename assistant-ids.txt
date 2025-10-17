@@ -12,7 +12,7 @@ Whitney (Website Design): 2c349e34-f9eb-4a5c-a970-83225a3197ba
 Marcus (CRM): f2b91312-4113-4a79-8a08-88e239609630
 Taylor (Mass Tort): 250b8b65-1332-41be-a3ec-9f59b1b4f9df
 
-VAPI API Key: c4b1fe40-f188-4a21-b405-91b3119f6a3f
+
 
 Configuration Date: October 17, 2024
 Last Updated: October 17, 2024 (Added 4 new specialists)
