@@ -8,6 +8,7 @@
     "dev": "nodemon src/index.js start",
     "deploy": "node scripts/deploy.js",
     "configure-squad": "node scripts/configure-squad.js",
+    "configure-new-specialists": "node scripts/configure-new-specialists.js",
     "enable-rolling-history": "node scripts/enable-rolling-history.js",
     "test": "node scripts/test.js",
     "test-sms": "node scripts/test.js sms",

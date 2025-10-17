@@ -7,13 +7,21 @@ const paula = require('./paula-performance-leads');
 const alex = require('./alex-ai-intake');
 const peter = require('./peter-ppc');
 const patricia = require('./patricia-practice-areas');
+const samantha = require('./samantha-seo');
+const whitney = require('./whitney-web-design');
+const marcus = require('./marcus-crm');
+const taylor = require('./taylor-mass-tort');
 
 // Registry of all active sub-agents
 const subAgents = {
   paula,
   alex,
   peter,
-  patricia
+  patricia,
+  samantha,
+  whitney,
+  marcus,
+  taylor
 };
 
 // Get sub-agent by ID
