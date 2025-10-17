@@ -5,6 +5,8 @@ const SMSClient = require('../services/sms-client');
 const TwilioVoiceService = require('../services/twilio-voice');
 const SubAgentWebhook = require('./sub-agent-webhook');
 const TransferWebhook = require('./transfer-webhook');
+const ContextTransferWebhook = require('./context-transfer-webhook');
+const contextManager = require('../services/context-manager');
 
 class WebhookHandler {
   constructor() {
@@ -14,6 +16,8 @@ class WebhookHandler {
     this.twilioVoice = new TwilioVoiceService();
     this.subAgentWebhook = new SubAgentWebhook();
     this.transferWebhook = new TransferWebhook();
+    this.contextTransferWebhook = new ContextTransferWebhook();
+    this.contextManager = contextManager;
     this.webhookSecret = process.env.WEBHOOK_SECRET;
     
     this.setupMiddleware();
@@ -63,6 +67,9 @@ class WebhookHandler {
 
     // VAPI webhooks
     this.app.post('/webhook/vapi', this.handleVAPIWebhook.bind(this));
+    
+    // Context-aware transfer webhooks (NEW - with automatic summarization)
+    this.app.use('/webhook/context', this.contextTransferWebhook.getRouter());
     
     // Transfer webhook (for Squad transfers)
     this.app.use('/webhook/vapi', this.transferWebhook.getRouter());
@@ -231,6 +238,24 @@ class WebhookHandler {
   async handleTranscript(call) {
     try {
       console.log('📝 Transcript received for call:', call.id);
+      
+      // Record message in context manager for automatic summarization
+      if (call.transcript && call.id) {
+        const messages = call.transcript.split('\n').filter(m => m.trim());
+        messages.forEach(msg => {
+          const isUser = msg.toLowerCase().startsWith('user:') || msg.toLowerCase().startsWith('caller:');
+          const role = isUser ? 'user' : 'assistant';
+          const content = msg.replace(/^(user|caller|assistant):\s*/i, '').trim();
+          
+          if (content) {
+            this.contextManager.addMessage(call.id, role, content, {
+              agentName: isUser ? 'User' : (call.assistantName || 'Sarah'),
+              callId: call.id,
+              source: 'vapi-transcript'
+            });
+          }
+        });
+      }
       
       if (call.customerId && call.transcript) {
         await this.ghlClient.addNote(call.customerId, {

@@ -15,6 +15,7 @@
     "test-sub-agents": "node scripts/test-sub-agents.js all",
     "test-routing": "node scripts/test-sub-agents.js routing",
     "test-intent": "node scripts/test-sub-agents.js intent",
+    "test-context-manager": "node examples/context-manager-usage.js",
     "generate-agent": "node scripts/generate-agent.js",
     "generate-template": "node scripts/generate-agent.js template"
   },
