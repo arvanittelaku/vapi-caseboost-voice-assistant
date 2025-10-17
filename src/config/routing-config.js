@@ -75,20 +75,23 @@ module.exports = {
     
     patricia: {
       primary: [
-        'medical malpractice',
-        'personal injury',
-        'immigration',
-        'divorce',
-        'family law',
         'practice area',
         'case value',
-        'practice growth'
+        'practice growth',
+        'which practice area',
+        'practice specific',
+        'best practice area'
       ],
       secondary: [
+        'medical malpractice',
         'medical negligence',
+        'personal injury',
         'pi cases',
         'car accident',
+        'immigration',
         'visa',
+        'divorce',
+        'family law',
         'custody',
         'child support',
         'injury law'
@@ -105,7 +108,7 @@ module.exports = {
 
   // Weight for primary vs secondary keywords
   keywordWeights: {
-    primary: 2.0,
+    primary: 3.0,  // Increased from 2.0 to give more weight to service-specific keywords
     secondary: 1.0
   },
 
@@ -127,7 +130,8 @@ module.exports = {
   },
 
   // Routing priority order (if multiple agents match equally)
-  priorityOrder: ['patricia', 'paula', 'alex', 'peter'],
+  // Services take priority over practice areas (more specific intent)
+  priorityOrder: ['paula', 'alex', 'peter', 'patricia'],
 
   // Maximum confidence score (1.0 = 100%)
   maxConfidence: 1.0,
