@@ -1,0 +1,225 @@
+require("dotenv").config();
+const { DateTime } = require("luxon");
+
+class GHLClient {
+  constructor() {
+    this.apiKey = process.env.GHL_API_KEY;
+    this.locationId = process.env.GHL_LOCATION_ID;
+    this.baseUrl = "https://services.leadconnectorhq.com";
+  }
+
+  /**
+   * Check calendar availability for a specific date/time
+   * CRITICAL: GHL API requires Unix timestamps (milliseconds) for startTime/endTime
+   */
+  async checkCalendarAvailability(
+    calendarId,
+    dateStr,
+    timezone = "America/New_York"
+  ) {
+    try {
+      console.log(`📞 [GHL] Checking calendar availability...`);
+      console.log(`   Calendar ID: ${calendarId}`);
+      console.log(`   Date: ${dateStr}`);
+      console.log(`   Timezone: ${timezone}`);
+
+      // Convert date string to Unix timestamps (milliseconds)
+      const startOfDay = DateTime.fromISO(dateStr, { zone: timezone }).startOf('day');
+      const endOfDay = startOfDay.endOf('day');
+      
+      const startDate = startOfDay.toMillis();
+      const endDate = endOfDay.toMillis();
+
+      console.log(`   Start Timestamp: ${startDate} (${startOfDay.toISO()})`);
+      console.log(`   End Timestamp: ${endDate} (${endOfDay.toISO()})`);
+
+      // Use the free-slots API to get available slots
+      const url = `${this.baseUrl}/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+
+      console.log(`   API URL: ${url}`);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ [GHL] API Error (${response.status}):`, errorText);
+        
+        // Provide helpful error messages
+        if (response.status === 403) {
+          console.error(`
+🔐 PERMISSION ERROR (403):
+   Your API key does not have access to this calendar's location.
+   
+   TO FIX:
+   1. Go to GHL Private Integrations
+   2. Make sure the integration has calendar scopes enabled
+   3. Regenerate the access token if needed
+          `);
+        }
+        
+        throw new Error(`GHL API error (${response.status}): ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      // Extract free slots from the response
+      // Response format: { "2025-11-04": { "slots": ["2025-11-04T09:00:00-05:00", ...] } }
+      const freeSlots = [];
+      for (const date in data) {
+        if (date !== 'traceId' && data[date].slots) {
+          freeSlots.push(...data[date].slots);
+        }
+      }
+      
+      console.log(`✅ [GHL] Calendar availability check successful`);
+      console.log(`   Retrieved ${freeSlots.length} available slots`);
+
+      return freeSlots;
+    } catch (error) {
+      console.error("❌ [GHL] Error checking availability:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a calendar appointment
+   * CRITICAL: GHL API requires ISO 8601 string for startTime
+   */
+  async createCalendarAppointment(calendarId, appointmentData) {
+    try {
+      console.log(`📅 [GHL] Creating appointment...`);
+      console.log(`   Calendar ID: ${calendarId}`);
+      console.log(`   Contact ID: ${appointmentData.contactId}`);
+      console.log(`   Start Time (input): ${appointmentData.startTime}`);
+
+      // CRITICAL: Convert startTime to ISO 8601 string
+      const startTimeMs = appointmentData.startTime;
+      const startTimeISO = new Date(startTimeMs).toISOString();
+      
+      console.log(`   Start Time (ISO): ${startTimeISO}`);
+      console.log(`   Title: ${appointmentData.title || "Appointment"}`);
+
+      const payload = {
+        calendarId: calendarId,
+        locationId: this.locationId,
+        contactId: appointmentData.contactId,
+        startTime: startTimeISO, // ISO 8601 format required!
+        title: appointmentData.title || "Appointment",
+        appointmentStatus: "confirmed",
+      };
+
+      console.log(`📤 [GHL] Payload:`, JSON.stringify(payload, null, 2));
+
+      const url = `${this.baseUrl}/calendars/events/appointments`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`❌ [GHL] Appointment creation failed:`);
+        console.error(`   Status: ${response.status}`);
+        console.error(`   Error:`, JSON.stringify(errorData, null, 2));
+        
+        // Provide helpful error messages
+        if (response.status === 400 && errorData.message?.includes('no longer available')) {
+          console.error(`
+⚠️ SLOT UNAVAILABLE (400):
+   The time slot you selected is not available.
+   
+   Possible reasons:
+   1. Slot is already booked by someone else
+   2. Time is outside calendar working hours
+   3. Calendar preferences not configured (Slot Duration, Interval)
+   4. Calendar is not published/active
+   
+   TO FIX:
+   1. Check GHL → Settings → Calendars → [Your Calendar]
+   2. Verify "Availability" tab has working hours set
+   3. Verify "Preferences" tab has Slot Duration set (e.g., 30 min)
+   4. Try a different date/time that you KNOW is empty
+   5. Make sure calendar is Published (toggle at top-right)
+          `);
+        }
+        
+        throw new Error(
+          errorData.message || `GHL API error: ${response.status}`
+        );
+      }
+
+      const result = await response.json();
+      console.log(`✅ [GHL] Appointment created successfully!`);
+      console.log(`   Appointment ID: ${result.id}`);
+      console.log(`   Status: ${result.status || 'confirmed'}`);
+
+      return result;
+    } catch (error) {
+      console.error("❌ [GHL] Error creating appointment:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Update contact custom fields
+   */
+  async updateContactCustomFields(contactId, customFields) {
+    try {
+      console.log(
+        `[GHL] Updating contact ${contactId} with fields:`,
+        customFields
+      );
+
+      // Convert object to array format required by GHL API
+      // From: { booking_date: "2025-11-04", booking_hour: "10:00 AM" }
+      // To: [{ key: "booking_date", field_value: "2025-11-04" }, ...]
+      const customFieldsArray = Object.entries(customFields).map(([key, value]) => ({
+        key: key,
+        field_value: value
+      }));
+
+      console.log(`[GHL] Converted to array format:`, JSON.stringify(customFieldsArray, null, 2));
+
+      const url = `${this.baseUrl}/contacts/${contactId}`;
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ customFields: customFieldsArray }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[GHL] Contact update failed:", errorText);
+        throw new Error(`Failed to update contact: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log(`[GHL] Contact updated successfully`);
+
+      return result;
+    } catch (error) {
+      console.error("[GHL] Error updating contact:", error.message);
+      throw error;
+    }
+  }
+}
+
+module.exports = new GHLClient();
+
