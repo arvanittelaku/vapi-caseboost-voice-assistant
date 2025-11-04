@@ -216,20 +216,19 @@ async function handleBookCalendarAppointment(toolCall, event) {
       `[BOOK_APPOINTMENT] Time: ${bookingDate} at ${bookingTime} (${timezone})`
     );
 
-    // Parse booking time
-    const userDateTime = DateTime.fromFormat(
-      `${bookingDate} ${bookingTime}`,
-      "yyyy-MM-dd h:mm a",
-      { zone: timezone }
-    );
+    // Parse booking time using the same function as availability check
+    const userDateTime = parseUserDateTime(bookingDate, bookingTime, timezone);
 
     if (!userDateTime.isValid) {
+      console.log(`[BOOK_APPOINTMENT] Failed to parse date: ${bookingDate} ${bookingTime}`);
       return {
         success: false,
         message:
           "There was an error with the booking time. Let me check availability again.",
       };
     }
+
+    console.log(`[BOOK_APPOINTMENT] Parsed as: ${userDateTime.toISO()}`);
 
     // Convert to calendar timezone
     const calendarDateTime = userDateTime.setZone(CALENDAR_TIMEZONE);
