@@ -6,6 +6,8 @@ const TwilioVoiceService = require('../services/twilio-voice');
 const SubAgentWebhook = require('./sub-agent-webhook');
 const TransferWebhook = require('./transfer-webhook');
 const ContextTransferWebhook = require('./context-transfer-webhook');
+const VAPIFunctionToolWebhook = require('./vapi-function-tool-webhook');
+const { handleCalendarWebhook } = require('./calendar-webhook');
 const contextManager = require('../services/context-manager');
 
 class WebhookHandler {
@@ -17,6 +19,7 @@ class WebhookHandler {
     this.subAgentWebhook = new SubAgentWebhook();
     this.transferWebhook = new TransferWebhook();
     this.contextTransferWebhook = new ContextTransferWebhook();
+    this.vapiFunctionToolWebhook = VAPIFunctionToolWebhook;
     this.contextManager = contextManager;
     this.webhookSecret = process.env.WEBHOOK_SECRET;
     
@@ -76,6 +79,12 @@ class WebhookHandler {
     
     // Sub-agent routing webhooks (legacy, kept for reference)
     this.app.use('/webhook/sub-agent', this.subAgentWebhook.getRouter());
+    
+    // VAPI Function Tool webhook (receives data from send_info_case_boost)
+    this.app.post('/webhook/vapi/function-tool', this.vapiFunctionToolWebhook.handleFunctionToolCall.bind(this.vapiFunctionToolWebhook));
+    
+    // Calendar webhooks (NEW - handles check_calendar_availability and book_calendar_appointment)
+    this.app.post('/webhook/vapi/calendar', handleCalendarWebhook);
     
     // GoHighLevel webhooks
     this.app.post('/webhook/ghl', this.handleGHLWebhook.bind(this));
@@ -359,7 +368,25 @@ class WebhookHandler {
       
       const contact = webhookData.contact;
       if (contact && this.shouldCallContact(contact)) {
-        await this.scheduleVAPICall(contact);
+        // Use the new GHL webhook handler with ALL form data
+        const { handleGHLFormSubmission } = require('./ghl-webhook-handler');
+        
+        // Create a mock Express response for internal use
+        const mockRes = {
+          status: (code) => ({
+            json: (data) => {
+              if (code >= 400) {
+                console.error('❌ GHL form handling failed:', data);
+              } else {
+                console.log('✅ VAPI call initiated from form submission:', data.callId);
+              }
+              return data;
+            }
+          })
+        };
+        
+        const mockReq = { body: contact };
+        await handleGHLFormSubmission(mockReq, mockRes);
       }
     } catch (error) {
       console.error('❌ Error handling form submitted:', error.message);

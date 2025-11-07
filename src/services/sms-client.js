@@ -6,8 +6,13 @@ class SMSClient {
     this.authToken = process.env.TWILIO_AUTH_TOKEN;
     this.phoneNumber = process.env.TWILIO_PHONE_NUMBER;
     
-    if (!this.accountSid || !this.authToken || !this.phoneNumber) {
-      throw new Error('TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER are required');
+    // SMS is optional - only initialize if credentials are provided
+    this.enabled = !!(this.accountSid && this.authToken && this.phoneNumber);
+    
+    if (!this.enabled) {
+      console.warn('⚠️  Twilio SMS not configured - SMS features will be disabled');
+      this.client = null;
+      return;
     }
 
     this.client = twilio(this.accountSid, this.authToken);
@@ -17,6 +22,11 @@ class SMSClient {
    * Send SMS message
    */
   async sendSMS(to, message, mediaUrl = null) {
+    if (!this.enabled) {
+      console.warn('⚠️  SMS not sent - Twilio not configured');
+      return null;
+    }
+    
     try {
       const messageData = {
         body: message,

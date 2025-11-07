@@ -9,8 +9,13 @@ class VAPIClient {
     this.assistantId = process.env.VAPI_ASSISTANT_ID;
     this.phoneNumberId = process.env.VAPI_PHONE_NUMBER_ID;
     
-    if (!this.apiKey) {
-      throw new Error('VAPI_API_KEY is required');
+    // VAPI is optional for calendar-only testing
+    this.enabled = !!this.apiKey;
+    
+    if (!this.enabled) {
+      console.warn('⚠️  VAPI not configured - assistant features will be disabled (calendar features will still work)');
+      this.client = null;
+      return;
     }
 
     this.client = axios.create({
@@ -23,9 +28,22 @@ class VAPIClient {
   }
 
   /**
+   * Check if VAPI is enabled
+   */
+  checkEnabled() {
+    if (!this.enabled) {
+      console.warn('⚠️  VAPI operation skipped - not configured');
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Create a new assistant with CaseBoost configuration
    */
   async createAssistant() {
+    if (!this.checkEnabled()) return null;
+    
     try {
       const assistantData = {
         name: config.name,
@@ -50,6 +68,8 @@ class VAPIClient {
    * Update an existing assistant
    */
   async updateAssistant(assistantId) {
+    if (!this.checkEnabled()) return null;
+    
     try {
       const assistantData = {
         name: config.name,
@@ -73,6 +93,8 @@ class VAPIClient {
    * Get assistant details
    */
   async getAssistant(assistantId) {
+    if (!this.checkEnabled()) return null;
+    
     try {
       const response = await this.client.get(`/assistant/${assistantId}`);
       return response.data;
@@ -86,7 +108,9 @@ class VAPIClient {
    * List all assistants
    */
   async listAssistants() {
-    try {
+    if (!this.checkEnabled()) return [];
+    
+    try{
       const response = await this.client.get('/assistant');
       return response.data;
     } catch (error) {
@@ -119,6 +143,8 @@ class VAPIClient {
    * Make a call
    */
   async makeCall(phoneNumber, contactData = {}) {
+    if (!this.checkEnabled()) return null;
+    
     try {
       const callData = {
         phoneNumberId: this.phoneNumberId,
@@ -203,6 +229,11 @@ class VAPIClient {
    * Test assistant configuration
    */
   async testConfiguration() {
+    if (!this.enabled) {
+      console.log('⚠️  Skipping VAPI configuration test - not configured');
+      return false;
+    }
+    
     try {
       console.log('🧪 Testing VAPI configuration...');
       

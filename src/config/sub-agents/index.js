@@ -1,72 +1,22 @@
 /**
- * Sub-Agent Registry
- * Central registry for all sub-agents with routing logic
+ * Sub-Agents Configuration
+ * This is a placeholder for legacy sub-agent code
+ * Current implementation uses Squad-based transfers
  */
 
-const paula = require('./paula-performance-leads');
-const alex = require('./alex-ai-intake');
-const peter = require('./peter-ppc');
-const patricia = require('./patricia-practice-areas');
-const samantha = require('./samantha-seo');
-const whitney = require('./whitney-web-design');
-const marcus = require('./marcus-crm');
-const taylor = require('./taylor-mass-tort');
-
-// Registry of all active sub-agents
-const subAgents = {
-  paula,
-  alex,
-  peter,
-  patricia,
-  samantha,
-  whitney,
-  marcus,
-  taylor
-};
-
-// Get sub-agent by ID
-function getSubAgent(id) {
-  return subAgents[id] || null;
+// Placeholder functions for backward compatibility
+function getSubAgent(name) {
+  return null;
 }
 
-// Get all sub-agents
 function getAllSubAgents() {
-  return Object.values(subAgents);
-}
-
-// Get sub-agent IDs
-function getSubAgentIds() {
-  return Object.keys(subAgents);
-}
-
-// Find sub-agent by expertise keywords
-function findByExpertise(keywords) {
-  const matches = [];
-  
-  for (const agent of getAllSubAgents()) {
-    const expertiseString = agent.expertise.join(' ').toLowerCase();
-    const matchCount = keywords.filter(keyword => 
-      expertiseString.includes(keyword.toLowerCase())
-    ).length;
-    
-    if (matchCount > 0) {
-      matches.push({
-        agent,
-        matchCount,
-        confidence: matchCount / keywords.length
-      });
-    }
-  }
-  
-  // Sort by match count (descending)
-  return matches.sort((a, b) => b.matchCount - a.matchCount);
+  return [];
 }
 
 module.exports = {
-  subAgents,
   getSubAgent,
-  getAllSubAgents,
-  getSubAgentIds,
-  findByExpertise
+  getAllSubAgents
 };
+
+
 

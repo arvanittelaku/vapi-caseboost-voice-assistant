@@ -6,8 +6,13 @@ class TwilioVoiceService {
     this.authToken = process.env.TWILIO_AUTH_TOKEN;
     this.phoneNumber = process.env.TWILIO_PHONE_NUMBER;
     
-    if (!this.accountSid || !this.authToken || !this.phoneNumber) {
-      throw new Error('TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER are required');
+    // Twilio Voice is optional - only initialize if credentials are provided
+    this.enabled = !!(this.accountSid && this.authToken && this.phoneNumber);
+    
+    if (!this.enabled) {
+      console.warn('⚠️  Twilio Voice not configured - voice call features will be disabled');
+      this.client = null;
+      return;
     }
 
     this.client = twilio(this.accountSid, this.authToken);
@@ -17,6 +22,11 @@ class TwilioVoiceService {
    * Make an outbound call
    */
   async makeCall(to, message, recordingEnabled = true) {
+    if (!this.enabled) {
+      console.warn('⚠️  Voice call not made - Twilio not configured');
+      return null;
+    }
+    
     try {
       const twiml = this.generateTwiml(message, recordingEnabled);
       
