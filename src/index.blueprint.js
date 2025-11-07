@@ -19,6 +19,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Root endpoint
+app.get("/", (req, res) => {
+  res.json({
+    name: "VAPI CaseBoost Voice Assistant",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      health: "GET /health",
+      webhook: "POST /webhook/vapi",
+    },
+    documentation: "API server for VAPI voice assistant with GHL integration",
+  });
+});
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.json({
