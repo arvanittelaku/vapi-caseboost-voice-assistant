@@ -1,0 +1,30 @@
+{
+  "squadId": "d84cc64f-e67b-4020-8204-8a1cfdacdf16",
+  "phoneNumberId": "21a417c0-ef45-41dc-a5fa-e02207fb9dad",
+  "customer": {
+    "number": "{{contact.phone}}",
+    "name": "{{contact.first_name}} {{contact.last_name}}",
+    "email": "{{contact.email}}"
+  },
+  "assistantOverrides": {
+    "variableValues": {
+      "firstName": "{{contact.first_name}}",
+      "lastName": "{{contact.last_name}}",
+      "email": "{{contact.email}}",
+      "phone": "{{contact.phone}}",
+      "fullName": "{{contact.first_name}} {{contact.last_name}}",
+      "contactSource": "{{contact.source}}",
+      "contactType": "{{contact.type}}",
+      "firmName": "{{contact.firm_name}}",
+      "practiceArea": "{{contact.practice_area}}",
+      "practiceRegion": "{{contact.practice_region}}",
+      "casesMonthly": "{{contact.cases_monthly}}",
+      "firmSize": "{{contact.firm_size}}",
+      "marketingBudget": "{{contact.marketing_budget}}",
+      "message": "{{contact.message}}",
+      "additionalInfo": "{{contact.additional_information}}"
+    },
+    "firstMessage": "Hi {{contact.first_name}}, this is Sarah from CaseBoost. Thanks for reaching out. Do you have a few minutes to discuss how we can help grow your practice?"
+  }
+}
+

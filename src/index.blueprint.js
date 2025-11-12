@@ -9,8 +9,9 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Increase payload limit for large VAPI webhook payloads (status-update can be 200KB+)
+app.use(bodyParser.json({ limit: '500kb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '500kb' }));
 
 // Request logging
 app.use((req, res, next) => {

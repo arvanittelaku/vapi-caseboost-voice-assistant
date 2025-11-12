@@ -57,6 +57,10 @@ async function handleVAPIWebhook(req, res) {
     } else if (functionName === "book_calendar_appointment" || 
                functionName === "book_calendar_appointment_caseboost") {
       result = await handleBookCalendarAppointment(toolCall, event);
+    } else if (functionName === "capture_qualification_data") {
+      // This tool just captures data - return success (data is used by send_info_case_boost)
+      console.log("[WEBHOOK] Data captured successfully");
+      result = { success: true, message: "Data captured successfully" };
     } else {
       console.log("[WEBHOOK] Unknown function:", functionName);
       result = { error: `Unknown function: ${functionName}` };
@@ -93,7 +97,10 @@ async function handleVAPIWebhook(req, res) {
 async function handleCheckCalendarAvailability(toolCall, event) {
   try {
     const params = toolCall.function.arguments;
-    const { requestedDate, requestedTime, timezone } = params;
+    // Support both parameter naming conventions
+    const requestedDate = params.requestedDate || params.date;
+    const requestedTime = params.requestedTime || params.time;
+    const timezone = params.timezone;
 
     console.log(
       `[CHECK_AVAILABILITY] Checking: ${requestedDate} at ${requestedTime} (${timezone})`
@@ -208,8 +215,13 @@ async function handleCheckCalendarAvailability(toolCall, event) {
 async function handleBookCalendarAppointment(toolCall, event) {
   try {
     const params = toolCall.function.arguments;
-    const { bookingDate, bookingTime, timezone, fullName, email, phone } =
-      params;
+    // Support both parameter naming conventions
+    const bookingDate = params.bookingDate || params.date;
+    const bookingTime = params.bookingTime || params.time;
+    const timezone = params.timezone;
+    const fullName = params.fullName || params.name;
+    const email = params.email;
+    const phone = params.phone;
 
     console.log(`[BOOK_APPOINTMENT] Booking for: ${fullName} (${email})`);
     console.log(
@@ -317,12 +329,18 @@ async function handleBookCalendarAppointment(toolCall, event) {
  * Helper: Parse user's date/time input
  */
 function parseUserDateTime(dateStr, timeStr, timezone) {
+  // Validate inputs
+  if (!dateStr || !timeStr || !timezone) {
+    console.error(`[PARSE_DATE] Missing required parameters: dateStr=${dateStr}, timeStr=${timeStr}, timezone=${timezone}`);
+    return DateTime.invalid("Missing required parameters");
+  }
+
   const now = DateTime.now().setZone(timezone);
 
   // Handle relative dates
   let targetDate = now;
 
-  const dateLower = dateStr.toLowerCase();
+  const dateLower = String(dateStr).toLowerCase();
 
   if (dateLower.includes("today")) {
     targetDate = now;
