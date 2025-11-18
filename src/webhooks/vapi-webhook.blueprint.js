@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { DateTime } = require("luxon");
 const ghlClient = require("../services/ghl-client.blueprint");
+const callRetryService = require("../services/call-retry-service.blueprint");
 
 const CALENDAR_ID = process.env.GHL_CALENDAR_ID;
 const CALENDAR_TIMEZONE = process.env.CALENDAR_TIMEZONE || "America/New_York";
@@ -25,9 +26,16 @@ async function handleVAPIWebhook(req, res) {
     const event = req.body;
 
     // Log the incoming event
-    console.log("[WEBHOOK] Event type:", event.message?.type || "unknown");
+    console.log("[WEBHOOK] Event type:", event.type || event.message?.type || "unknown");
     console.log("[WEBHOOK] Squad ID:", event.squadId || "N/A");
     console.log("[WEBHOOK] Assistant ID:", event.assistantId || "N/A");
+
+    // Handle call-ended events (for retry logic)
+    if (event.type === "call-ended" || event.type === "end-of-call-report") {
+      console.log("[WEBHOOK] Call ended event detected");
+      await handleCallEnded(event);
+      return res.json({ success: true, message: "Call ended event processed" });
+    }
 
     // Parse tool call (supports multiple formats)
     const toolCall =
@@ -429,6 +437,71 @@ function findAlternativeSlots(requestedTime, busySlots, count = 3) {
   }
 
   return alternatives;
+}
+
+/**
+ * Handle call ended event - process retry logic
+ */
+async function handleCallEnded(event) {
+  try {
+    const call = event.call || event;
+    const endedReason = call.endedReason || call.ended_reason;
+    const duration = call.duration || 0;
+    const transcript = call.transcript || "";
+
+    console.log(`[CALL_ENDED] Reason: ${endedReason}`);
+    console.log(`[CALL_ENDED] Duration: ${duration}s`);
+
+    // Extract contact info from variableValues or assistantOverrides
+    const variableValues = 
+      call?.assistantOverrides?.variableValues || 
+      call?.variableValues ||
+      event?.assistantOverrides?.variableValues ||
+      {};
+
+    const contactId = variableValues.contact_id || variableValues.contactId;
+    const phone = variableValues.phone || call?.customer?.number;
+
+    if (!contactId) {
+      console.log("⚠️ No contact ID found in call event");
+      return;
+    }
+
+    console.log(`[CALL_ENDED] Contact ID: ${contactId}`);
+    console.log(`[CALL_ENDED] Phone: ${phone}`);
+
+    // Get customer timezone from GHL contact
+    const contact = await ghlClient.getContact(contactId);
+    const customerTimezone = contact.timezone || contact.customFieldsParsed?.timezone || "America/New_York";
+
+    // Update basic call info
+    await ghlClient.updateContactCustomFields(contactId, {
+      ended_reason: endedReason,
+      call_duration: duration.toString(),
+      last_call_time: new Date().toISOString(),
+      call_transcript: transcript.substring(0, 5000), // Limit transcript length
+    });
+
+    // Check if call was successful
+    const isSuccess = callRetryService.isCallSuccessful(endedReason, duration);
+
+    if (isSuccess) {
+      console.log(`✅ CALL SUCCESSFUL (${duration}s)`);
+      await ghlClient.updateContactCustomFields(contactId, {
+        call_status: "success",
+        call_result: "answered",
+      });
+      return;
+    }
+
+    // Handle failed call
+    console.log(`❌ CALL FAILED - Starting retry logic...`);
+    await callRetryService.handleFailedCall(contactId, phone, endedReason, customerTimezone);
+  } catch (error) {
+    console.error("[CALL_ENDED] Error:", error.message);
+    console.error("[CALL_ENDED] Stack:", error.stack);
+    // Don't throw - we don't want call-ended errors to break the webhook
+  }
 }
 
 module.exports = handleVAPIWebhook;

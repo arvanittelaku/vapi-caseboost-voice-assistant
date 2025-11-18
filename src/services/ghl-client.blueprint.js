@@ -219,6 +219,127 @@ class GHLClient {
       throw error;
     }
   }
+
+  /**
+   * Get contact with parsed custom fields
+   */
+  async getContact(contactId) {
+    try {
+      console.log(`[GHL] Getting contact ${contactId}...`);
+
+      const url = `${this.baseUrl}/contacts/${contactId}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[GHL] Get contact failed:", errorText);
+        throw new Error(`Failed to get contact: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const contact = result.contact || result;
+
+      // Parse custom fields array into object
+      if (contact.customFields && Array.isArray(contact.customFields)) {
+        const parsedFields = {};
+        contact.customFields.forEach((field) => {
+          const key = field.key || field.name;
+          const value = field.value || field.field_value;
+          if (key) {
+            parsedFields[key] = value;
+          }
+        });
+        contact.customFieldsParsed = parsedFields;
+      }
+
+      console.log(`[GHL] Contact retrieved successfully`);
+      return contact;
+    } catch (error) {
+      console.error("[GHL] Error getting contact:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Add tag to contact
+   */
+  async addTagToContact(contactId, tagName) {
+    try {
+      console.log(`[GHL] Adding tag "${tagName}" to contact ${contactId}...`);
+
+      const url = `${this.baseUrl}/contacts/${contactId}/tags`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tags: [tagName] }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[GHL] Could not add tag:`, errorText);
+        throw new Error(`Failed to add tag: ${response.status}`);
+      }
+
+      console.log(`✅ Tag "${tagName}" added to contact`);
+      return await response.json();
+    } catch (error) {
+      console.error(`[GHL] Error adding tag:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Send SMS to contact via GHL
+   */
+  async sendSMS(contactId, phoneNumber, message) {
+    try {
+      console.log(`[GHL] Sending SMS to ${phoneNumber}...`);
+
+      const url = `${this.baseUrl}/conversations/messages`;
+
+      const payload = {
+        type: "SMS",
+        contactId: contactId,
+        phoneNumber: phoneNumber,
+        message: message,
+        locationId: this.locationId,
+      };
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[GHL] SMS send failed:`, errorText);
+        throw new Error(`Failed to send SMS: ${response.status}`);
+      }
+
+      console.log(`✅ SMS sent successfully`);
+      return await response.json();
+    } catch (error) {
+      console.error(`[GHL] Error sending SMS:`, error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = new GHLClient();

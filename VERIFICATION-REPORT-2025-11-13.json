@@ -1,0 +1,57 @@
+{
+  "vapi": {
+    "squad": {
+      "exists": true,
+      "name": "Case Boost Squad",
+      "members": 6
+    },
+    "phone": {
+      "exists": true,
+      "number": "+12136721526",
+      "serverUrl": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi",
+      "squadId": "d84cc64f-e67b-4020-8204-8a1cfdacdf16",
+      "serverUrlCorrect": true,
+      "assignedToSquad": true
+    },
+    "sarah": {
+      "exists": true,
+      "name": "Sarah",
+      "model": "N/A",
+      "voice": "11labs/sarah",
+      "toolsCount": 0
+    }
+  },
+  "ghl": {
+    "calendar": {
+      "accessible": true,
+      "freeSlots": 2
+    }
+  },
+  "server": {
+    "health": {
+      "online": true,
+      "responseTime": "N/A",
+      "timestamp": "2025-11-13T10:25:21.622Z"
+    },
+    "envVars": {
+      "VAPI_API_KEY": true,
+      "GHL_API_KEY": true,
+      "GHL_LOCATION_ID": true,
+      "GHL_CALENDAR_ID": true
+    }
+  },
+  "workflow": {
+    "payload": {
+      "exists": true,
+      "squadIdCorrect": true,
+      "phoneIdCorrect": true,
+      "hasVariables": true,
+      "variableCount": 15,
+      "hasFirstMessage": true
+    }
+  },
+  "issues": [],
+  "warnings": [
+    "Sarah is not the first member (start node) in squad"
+  ]
+}

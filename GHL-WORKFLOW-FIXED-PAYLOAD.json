@@ -1,6 +1,6 @@
 {
   "squadId": "d84cc64f-e67b-4020-8204-8a1cfdacdf16",
-  "phoneNumberId": "bd9e0ff5-c3af-4b39-a2f3-21b7debcb434",
+  "phoneNumberId": "21a417c0-ef45-41dc-a5fa-e02207fb9dad",
   "customer": {
     "number": "{{contact.phone}}",
     "name": "{{contact.first_name}} {{contact.last_name}}",
@@ -15,14 +15,14 @@
       "fullName": "{{contact.first_name}} {{contact.last_name}}",
       "contactSource": "{{contact.source}}",
       "contactType": "{{contact.type}}",
-      "firmName": "{{contact.firm_name}}",
-      "practiceArea": "{{contact.practice_area}}",
-      "practiceRegion": "{{contact.practice_region}}",
-      "casesMonthly": "{{contact.cases_monthly}}",
-      "firmSize": "{{contact.firm_size}}",
-      "marketingBudget": "{{contact.marketing_budget}}",
+      "firmName": "{{contact.company_name}}",
+      "practiceArea": "{{contact.custom_field['Practice Area']}}",
+      "practiceRegion": "{{contact.custom_field['Practice Region']}}",
+      "casesMonthly": "{{contact.custom_field['Cases Monthly']}}",
+      "firmSize": "{{contact.custom_field['Firm Size']}}",
+      "marketingBudget": "{{contact.custom_field['Marketing Budget']}}",
       "message": "{{contact.message}}",
-      "additionalInfo": "{{contact.additional_information}}"
+      "additionalInfo": "{{contact.custom_field['Additional Information']}}"
     },
     "firstMessage": "Hi {{contact.first_name}}, this is Sarah from CaseBoost. Thanks for reaching out. Do you have a few minutes to discuss how we can help grow your practice?"
   }

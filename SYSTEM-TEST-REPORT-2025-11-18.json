@@ -1,0 +1,614 @@
+{
+  "passed": 46,
+  "failed": 1,
+  "skipped": 2,
+  "tests": [
+    {
+      "category": "Environment Variables",
+      "name": "Required: VAPI_API_KEY",
+      "passed": true,
+      "message": "Set (c4b1fe40-f...)",
+      "details": {
+        "description": "VAPI API authentication"
+      },
+      "timestamp": "2025-11-18T13:34:47.404Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Required: GHL_API_KEY",
+      "passed": true,
+      "message": "Set (pit-168d68...)",
+      "details": {
+        "description": "GoHighLevel API authentication"
+      },
+      "timestamp": "2025-11-18T13:34:47.405Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Required: GHL_LOCATION_ID",
+      "passed": true,
+      "message": "Set (UKQeWLNeec...)",
+      "details": {
+        "description": "GHL location identifier"
+      },
+      "timestamp": "2025-11-18T13:34:47.405Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Required: GHL_CALENDAR_ID",
+      "passed": true,
+      "message": "Set (yipdEzKHoh...)",
+      "details": {
+        "description": "GHL calendar identifier"
+      },
+      "timestamp": "2025-11-18T13:34:47.405Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Required: VAPI_PHONE_NUMBER_ID",
+      "passed": true,
+      "message": "Set (bd9e0ff5-c...)",
+      "details": {
+        "description": "VAPI phone number identifier"
+      },
+      "timestamp": "2025-11-18T13:34:47.405Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Optional: CALENDAR_TIMEZONE",
+      "passed": true,
+      "message": "Using: America/New_York",
+      "details": {
+        "defaultValue": "America/New_York"
+      },
+      "timestamp": "2025-11-18T13:34:47.405Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Optional: PORT",
+      "passed": true,
+      "message": "Using: 3000",
+      "details": {
+        "defaultValue": "3001"
+      },
+      "timestamp": "2025-11-18T13:34:47.405Z"
+    },
+    {
+      "category": "Environment Variables",
+      "name": "Optional: SERVER_URL",
+      "passed": true,
+      "message": "Using: https://vapi-caseboost-voice-assistant.onrender.com",
+      "details": {
+        "defaultValue": "https://vapi-caseboost-voice-assistant.onrender.com"
+      },
+      "timestamp": "2025-11-18T13:34:47.406Z"
+    },
+    {
+      "category": "Backend Health",
+      "name": "Health Endpoint",
+      "passed": true,
+      "message": "Server is healthy (port: 3000)",
+      "details": {},
+      "timestamp": "2025-11-18T13:34:47.795Z"
+    },
+    {
+      "category": "Backend Health",
+      "name": "Root Endpoint",
+      "passed": true,
+      "message": "Server name: VAPI CaseBoost Voice Assistant",
+      "details": {},
+      "timestamp": "2025-11-18T13:34:48.346Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Today at 2 PM",
+      "passed": true,
+      "message": "Parsed correctly (2025-11-18T14:00:00.000-05:00)",
+      "details": {
+        "input": {
+          "dateStr": "today",
+          "timeStr": "2:00 PM",
+          "timezone": "America/New_York"
+        },
+        "output": "2025-11-18T14:00:00.000-05:00"
+      },
+      "timestamp": "2025-11-18T13:34:48.370Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Tomorrow at 10:30 AM",
+      "passed": true,
+      "message": "Parsed correctly (2025-11-19T10:30:00.000-05:00)",
+      "details": {
+        "input": {
+          "dateStr": "tomorrow",
+          "timeStr": "10:30 AM",
+          "timezone": "America/New_York"
+        },
+        "output": "2025-11-19T10:30:00.000-05:00"
+      },
+      "timestamp": "2025-11-18T13:34:48.372Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Monday at 9 AM",
+      "passed": true,
+      "message": "Parsed correctly (2025-11-24T09:00:00.000-05:00)",
+      "details": {
+        "input": {
+          "dateStr": "Monday",
+          "timeStr": "9 AM",
+          "timezone": "America/New_York"
+        },
+        "output": "2025-11-24T09:00:00.000-05:00"
+      },
+      "timestamp": "2025-11-18T13:34:48.373Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Friday at 3:00 PM",
+      "passed": true,
+      "message": "Parsed correctly (2025-11-21T15:00:00.000-05:00)",
+      "details": {
+        "input": {
+          "dateStr": "Friday",
+          "timeStr": "3:00 PM",
+          "timezone": "America/New_York"
+        },
+        "output": "2025-11-21T15:00:00.000-05:00"
+      },
+      "timestamp": "2025-11-18T13:34:48.374Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Invalid time format",
+      "passed": true,
+      "message": "Parsed correctly (Invalid)",
+      "details": {
+        "input": {
+          "dateStr": "today",
+          "timeStr": "invalid",
+          "timezone": "America/New_York"
+        },
+        "output": "Unable to parse time"
+      },
+      "timestamp": "2025-11-18T13:34:48.374Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Missing date",
+      "passed": true,
+      "message": "Parsed correctly (Invalid)",
+      "details": {
+        "input": {
+          "dateStr": null,
+          "timeStr": "2:00 PM",
+          "timezone": "America/New_York"
+        },
+        "output": "Missing required parameters"
+      },
+      "timestamp": "2025-11-18T13:34:48.375Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Missing time",
+      "passed": true,
+      "message": "Parsed correctly (Invalid)",
+      "details": {
+        "input": {
+          "dateStr": "today",
+          "timeStr": null,
+          "timezone": "America/New_York"
+        },
+        "output": "Missing required parameters"
+      },
+      "timestamp": "2025-11-18T13:34:48.375Z"
+    },
+    {
+      "category": "Date/Time Parsing",
+      "name": "Missing timezone",
+      "passed": true,
+      "message": "Parsed correctly (Invalid)",
+      "details": {
+        "input": {
+          "dateStr": "today",
+          "timeStr": "2:00 PM",
+          "timezone": null
+        },
+        "output": "Missing required parameters"
+      },
+      "timestamp": "2025-11-18T13:34:48.375Z"
+    },
+    {
+      "category": "Input Validation",
+      "name": "Missing tool call",
+      "passed": true,
+      "message": "Validation correctly rejected",
+      "details": {
+        "payload": "{\"message\":{\"type\":\"status-update\"}}"
+      },
+      "timestamp": "2025-11-18T13:34:48.375Z"
+    },
+    {
+      "category": "Input Validation",
+      "name": "Missing function name",
+      "passed": true,
+      "message": "Validation correctly rejected",
+      "details": {
+        "payload": "{\"message\":{\"toolCalls\":[{\"id\":\"test\",\"function\":{\"arguments\":{}}}]}}"
+      },
+      "timestamp": "2025-11-18T13:34:48.375Z"
+    },
+    {
+      "category": "Input Validation",
+      "name": "Missing function arguments",
+      "passed": true,
+      "message": "Validation correctly rejected",
+      "details": {
+        "payload": "{\"message\":{\"toolCalls\":[{\"id\":\"test\",\"function\":{\"name\":\"check_calendar_availability\"}}]}}"
+      },
+      "timestamp": "2025-11-18T13:34:48.375Z"
+    },
+    {
+      "category": "Input Validation",
+      "name": "Valid tool call structure",
+      "passed": {
+        "date": "today",
+        "time": "2:00 PM",
+        "timezone": "America/New_York"
+      },
+      "message": "Validation passed",
+      "details": {
+        "payload": "{\"message\":{\"toolCalls\":[{\"id\":\"test_123\",\"function\":{\"name\":\"check_calendar_availability\",\"argument"
+      },
+      "timestamp": "2025-11-18T13:34:48.376Z"
+    },
+    {
+      "category": "Error Handling",
+      "name": "Invalid date format handling",
+      "passed": true,
+      "message": "Expected behavior: Returns user-friendly error message",
+      "details": {
+        "scenario": "parseUserDateTime returns invalid DateTime"
+      },
+      "timestamp": "2025-11-18T13:34:48.376Z"
+    },
+    {
+      "category": "Error Handling",
+      "name": "Missing contact ID handling",
+      "passed": true,
+      "message": "Expected behavior: Returns error message asking user to try again",
+      "details": {
+        "scenario": "Booking without contact ID"
+      },
+      "timestamp": "2025-11-18T13:34:48.376Z"
+    },
+    {
+      "category": "Error Handling",
+      "name": "Slot unavailable handling",
+      "passed": true,
+      "message": "Expected behavior: Returns message suggesting alternatives",
+      "details": {
+        "scenario": "Booking already-booked slot"
+      },
+      "timestamp": "2025-11-18T13:34:48.376Z"
+    },
+    {
+      "category": "Error Handling",
+      "name": "API error handling",
+      "passed": true,
+      "message": "Expected behavior: Catches error and returns user-friendly message",
+      "details": {
+        "scenario": "GHL API returns error"
+      },
+      "timestamp": "2025-11-18T13:34:48.376Z"
+    },
+    {
+      "category": "Webhook Handler",
+      "name": "Check Calendar Availability",
+      "passed": true,
+      "message": "Response format correct (toolCallId: test_call_123)",
+      "details": {
+        "status": 200,
+        "responseKeys": [
+          "results"
+        ]
+      },
+      "timestamp": "2025-11-18T13:34:52.469Z"
+    },
+    {
+      "category": "Webhook Handler",
+      "name": "Book Calendar Appointment",
+      "passed": false,
+      "message": "Request failed: Request timeout",
+      "details": {
+        "error": "Request timeout"
+      },
+      "timestamp": "2025-11-18T13:35:02.472Z"
+    },
+    {
+      "category": "Webhook Handler",
+      "name": "Capture Qualification Data",
+      "passed": true,
+      "message": "Response format correct (toolCallId: test_call_789)",
+      "details": {
+        "status": 200,
+        "responseKeys": [
+          "results"
+        ]
+      },
+      "timestamp": "2025-11-18T13:35:02.763Z"
+    },
+    {
+      "category": "GHL Client",
+      "name": "Client Initialization",
+      "passed": true,
+      "message": "All methods available",
+      "details": {},
+      "timestamp": "2025-11-18T13:35:02.767Z"
+    },
+    {
+      "category": "GHL Client",
+      "name": "API Key Configuration",
+      "passed": true,
+      "message": "API key is set",
+      "details": {},
+      "timestamp": "2025-11-18T13:35:02.767Z"
+    },
+    {
+      "category": "GHL Client",
+      "name": "Calendar ID Configuration",
+      "passed": true,
+      "message": "Calendar ID: yipdEzKHohzoYmhg2Ctv",
+      "details": {},
+      "timestamp": "2025-11-18T13:35:02.767Z"
+    },
+    {
+      "category": "GHL Client",
+      "name": "Calendar Availability API Call",
+      "passed": true,
+      "message": "SKIPPED: Would make real API call (safe to skip - tested via Postman)",
+      "details": {
+        "reason": "Avoids real API calls"
+      },
+      "timestamp": "2025-11-18T13:35:02.767Z"
+    },
+    {
+      "category": "Calendar Availability Logic",
+      "name": "Within working hours (10 AM Monday)",
+      "passed": true,
+      "message": "Correctly accepted",
+      "details": {
+        "hour": 10,
+        "dayOfWeek": 1,
+        "workingHours": {
+          "start": 9,
+          "end": 17,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.768Z"
+    },
+    {
+      "category": "Calendar Availability Logic",
+      "name": "Before working hours (8 AM Monday)",
+      "passed": true,
+      "message": "Correctly rejected",
+      "details": {
+        "hour": 8,
+        "dayOfWeek": 1,
+        "workingHours": {
+          "start": 9,
+          "end": 17,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.769Z"
+    },
+    {
+      "category": "Calendar Availability Logic",
+      "name": "After working hours (6 PM Monday)",
+      "passed": true,
+      "message": "Correctly rejected",
+      "details": {
+        "hour": 18,
+        "dayOfWeek": 1,
+        "workingHours": {
+          "start": 9,
+          "end": 17,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.769Z"
+    },
+    {
+      "category": "Calendar Availability Logic",
+      "name": "Weekend (Saturday)",
+      "passed": true,
+      "message": "Correctly rejected",
+      "details": {
+        "hour": 10,
+        "dayOfWeek": 6,
+        "workingHours": {
+          "start": 9,
+          "end": 17,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.769Z"
+    },
+    {
+      "category": "Calendar Availability Logic",
+      "name": "At start time (9 AM Monday)",
+      "passed": true,
+      "message": "Correctly accepted",
+      "details": {
+        "hour": 9,
+        "dayOfWeek": 1,
+        "workingHours": {
+          "start": 9,
+          "end": 17,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.769Z"
+    },
+    {
+      "category": "Calendar Availability Logic",
+      "name": "At end time (5 PM Monday)",
+      "passed": true,
+      "message": "Correctly rejected",
+      "details": {
+        "hour": 17,
+        "dayOfWeek": 1,
+        "workingHours": {
+          "start": 9,
+          "end": 17,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.769Z"
+    },
+    {
+      "category": "Booking Logic",
+      "name": "bookingDate parameter",
+      "passed": true,
+      "message": "Parameters correctly extracted (date: today, name: Test User)",
+      "details": {
+        "params": {
+          "bookingDate": "today",
+          "bookingTime": "2:00 PM",
+          "timezone": "America/New_York",
+          "fullName": "Test User",
+          "email": "test@example.com",
+          "phone": "+1234567890"
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.770Z"
+    },
+    {
+      "category": "Booking Logic",
+      "name": "date parameter (alternative)",
+      "passed": true,
+      "message": "Parameters correctly extracted (date: tomorrow, name: Test User)",
+      "details": {
+        "params": {
+          "date": "tomorrow",
+          "time": "10:00 AM",
+          "timezone": "America/New_York",
+          "fullName": "Test User",
+          "email": "test@example.com",
+          "phone": "+1234567890"
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.770Z"
+    },
+    {
+      "category": "Booking Logic",
+      "name": "fullName parameter",
+      "passed": true,
+      "message": "Parameters correctly extracted (date: today, name: John Doe)",
+      "details": {
+        "params": {
+          "date": "today",
+          "time": "2:00 PM",
+          "timezone": "America/New_York",
+          "fullName": "John Doe",
+          "email": "test@example.com",
+          "phone": "+1234567890"
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.771Z"
+    },
+    {
+      "category": "Booking Logic",
+      "name": "name parameter (alternative)",
+      "passed": true,
+      "message": "Parameters correctly extracted (date: today, name: Jane Smith)",
+      "details": {
+        "params": {
+          "date": "today",
+          "time": "2:00 PM",
+          "timezone": "America/New_York",
+          "name": "Jane Smith",
+          "email": "test@example.com",
+          "phone": "+1234567890"
+        }
+      },
+      "timestamp": "2025-11-18T13:35:02.771Z"
+    },
+    {
+      "category": "Booking Logic",
+      "name": "Actual Appointment Creation",
+      "passed": true,
+      "message": "SKIPPED: Would create real appointment (tested via Postman)",
+      "details": {
+        "reason": "Avoids creating real data"
+      },
+      "timestamp": "2025-11-18T13:35:02.771Z"
+    },
+    {
+      "category": "Data Mapping",
+      "name": "GHL Workflow Payload Structure",
+      "passed": true,
+      "message": "All required fields present",
+      "details": {},
+      "timestamp": "2025-11-18T13:35:02.772Z"
+    },
+    {
+      "category": "Data Mapping",
+      "name": "Variable Mappings Count",
+      "passed": true,
+      "message": "15 variables mapped (expected: 15+)",
+      "details": {
+        "count": 15
+      },
+      "timestamp": "2025-11-18T13:35:02.772Z"
+    },
+    {
+      "category": "Data Mapping",
+      "name": "GHL Template Syntax",
+      "passed": true,
+      "message": "GHL template syntax detected",
+      "details": {},
+      "timestamp": "2025-11-18T13:35:02.772Z"
+    }
+  ],
+  "startTime": 1763472887398
+}

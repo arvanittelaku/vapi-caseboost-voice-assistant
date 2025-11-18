@@ -1,0 +1,107 @@
+{
+  "info": {
+    "name": "CaseBoost Voice Assistant - Pre-Call Tests",
+    "description": "Comprehensive test suite for all tools and integrations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://vapi-caseboost-voice-assistant.onrender.com/health",
+          "protocol": "https",
+          "host": [
+            "vapi-caseboost-voice-assistant.onrender.com"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Check Calendar Availability",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": {\n    \"toolCalls\": [\n      {\n        \"id\": \"test_call_123\",\n        \"function\": {\n          \"name\": \"check_calendar_availability\",\n          \"arguments\": {\n            \"date\": \"today\",\n            \"time\": \"2:00 PM\",\n            \"timezone\": \"America/New_York\"\n          }\n        }\n      }\n    ]\n  }\n}"
+        },
+        "url": {
+          "raw": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi",
+          "protocol": "https",
+          "host": [
+            "vapi-caseboost-voice-assistant.onrender.com"
+          ],
+          "path": [
+            "webhook",
+            "vapi"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Book Calendar Appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": {\n    \"toolCalls\": [\n      {\n        \"id\": \"test_call_456\",\n        \"function\": {\n          \"name\": \"book_calendar_appointment\",\n          \"arguments\": {\n            \"date\": \"today\",\n            \"time\": \"2:00 PM\",\n            \"timezone\": \"America/New_York\",\n            \"fullName\": \"Test User\",\n            \"email\": \"test@example.com\",\n            \"phone\": \"+1234567890\"\n          }\n        }\n      }\n    ]\n  },\n  \"call\": {\n    \"customer\": {\n      \"id\": \"test_contact_id\"\n    }\n  }\n}"
+        },
+        "url": {
+          "raw": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi",
+          "protocol": "https",
+          "host": [
+            "vapi-caseboost-voice-assistant.onrender.com"
+          ],
+          "path": [
+            "webhook",
+            "vapi"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Capture Qualification Data",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": {\n    \"toolCalls\": [\n      {\n        \"id\": \"test_call_789\",\n        \"function\": {\n          \"name\": \"capture_qualification_data\",\n          \"arguments\": {\n            \"firm_name\": \"Test Law Firm\",\n            \"firm_size\": \"10\",\n            \"staff_count\": \"20\",\n            \"current_leads_per_month\": \"5\",\n            \"capacity_leads_per_month\": \"13\",\n            \"success_definition\": \"30 leads per month\"\n          }\n        }\n      }\n    ]\n  }\n}"
+        },
+        "url": {
+          "raw": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi",
+          "protocol": "https",
+          "host": [
+            "vapi-caseboost-voice-assistant.onrender.com"
+          ],
+          "path": [
+            "webhook",
+            "vapi"
+          ]
+        }
+      }
+    }
+  ]
+}

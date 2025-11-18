@@ -1,0 +1,252 @@
+{
+  "phase1_code_audit": [
+    {
+      "test": "1.1 Webhook Handler Structure",
+      "pass": true,
+      "details": "Check: true, Book: true, Capture: true, Errors: true, Validation: true",
+      "severity": "info"
+    },
+    {
+      "test": "1.2 Parameter Naming Support",
+      "pass": true,
+      "details": "Supports both requestedDate/date and requestedTime/time",
+      "severity": "info"
+    },
+    {
+      "test": "1.3 Timezone Handling",
+      "pass": true,
+      "details": "Converts between user timezone and calendar timezone",
+      "severity": "info"
+    },
+    {
+      "test": "1.4 Working Hours Validation",
+      "pass": true,
+      "details": "Validates Mon-Fri, 9 AM - 5 PM",
+      "severity": "info"
+    },
+    {
+      "test": "1.5 Slot Matching Tolerance",
+      "pass": true,
+      "details": "Uses 1-minute tolerance for slot matching",
+      "severity": "info"
+    },
+    {
+      "test": "1.6 Double-Booking Prevention",
+      "pass": true,
+      "details": "Re-checks availability before booking",
+      "severity": "info"
+    },
+    {
+      "test": "1.7 GHL Client Implementation",
+      "pass": true,
+      "details": "Check: true, Create: true, Update: true",
+      "severity": "info"
+    },
+    {
+      "test": "1.8 GHL API Format Compliance",
+      "pass": true,
+      "details": "Uses Unix timestamps for free-slots, ISO8601 for appointments",
+      "severity": "info"
+    },
+    {
+      "test": "1.9 Server Configuration",
+      "pass": true,
+      "details": "BodyParser: true, Limit: true, Health: true, Webhook: true",
+      "severity": "info"
+    },
+    {
+      "test": "1.10 Payload Size Limit",
+      "pass": true,
+      "details": "Supports large VAPI payloads (500kb)",
+      "severity": "info"
+    },
+    {
+      "test": "1.11 Prompt File Structure",
+      "pass": false,
+      "details": "Tools: true, Calendar: false, Transfer: true",
+      "severity": "info"
+    },
+    {
+      "test": "1.12 Prompt Placeholder Handling",
+      "pass": false,
+      "details": "Explicitly avoids reading placeholder text literally",
+      "severity": "info"
+    }
+  ],
+  "phase2_configuration": [
+    {
+      "test": "2.1 VAPI_API_KEY",
+      "pass": true,
+      "details": "Set",
+      "severity": "info"
+    },
+    {
+      "test": "2.1 GHL_API_KEY",
+      "pass": true,
+      "details": "Set",
+      "severity": "info"
+    },
+    {
+      "test": "2.1 GHL_LOCATION_ID",
+      "pass": true,
+      "details": "Set",
+      "severity": "info"
+    },
+    {
+      "test": "2.1 GHL_CALENDAR_ID",
+      "pass": true,
+      "details": "Set",
+      "severity": "info"
+    },
+    {
+      "test": "2.1 VAPI_PHONE_NUMBER_ID",
+      "pass": true,
+      "details": "Set",
+      "severity": "info"
+    },
+    {
+      "test": "2.2 GHL Workflow Payload",
+      "pass": "Hi {{contact.first_name}}, this is Sarah from CaseBoost. Thanks for reaching out. Do you have a few minutes to discuss how we can help grow your practice?",
+      "details": "Squad: true, Phone: true, Variables: 15, Message: Hi {{contact.first_name}}, this is Sarah from CaseBoost. Thanks for reaching out. Do you have a few minutes to discuss how we can help grow your practice?",
+      "severity": "info"
+    },
+    {
+      "test": "2.3 Variable Mappings",
+      "pass": true,
+      "details": "6/6 critical variables mapped",
+      "severity": "info"
+    },
+    {
+      "test": "2.4 VAPI API Connection",
+      "pass": true,
+      "details": "Connected, 13 assistants found",
+      "severity": "info"
+    },
+    {
+      "test": "2.5 GHL Calendar API",
+      "pass": false,
+      "details": "Status: timeout of 10000ms exceeded",
+      "severity": "warning"
+    }
+  ],
+  "phase3_integrations": [
+    {
+      "test": "3.1 Server Health",
+      "pass": true,
+      "details": "Response time: N/A",
+      "severity": "info"
+    },
+    {
+      "test": "3.2 VAPI Squad Exists",
+      "pass": true,
+      "details": "Name: Case Boost Squad, Members: 6",
+      "severity": "info"
+    },
+    {
+      "test": "3.3 Squad Default Assistant",
+      "details": "Check start node configuration",
+      "severity": "info"
+    },
+    {
+      "test": "3.4 Phone Number Exists",
+      "pass": true,
+      "details": "Number: +12136721526",
+      "severity": "info"
+    },
+    {
+      "test": "3.5 Phone Server URL",
+      "pass": true,
+      "details": "Correct",
+      "severity": "info"
+    },
+    {
+      "test": "3.6 Phone Assigned to Squad",
+      "pass": true,
+      "details": "Correct",
+      "severity": "info"
+    },
+    {
+      "test": "3.7 Calendar Tools Attached",
+      "pass": false,
+      "details": "Found 0 calendar-related tools",
+      "severity": "info"
+    },
+    {
+      "test": "3.8 Tool Server URLs",
+      "pass": true,
+      "details": "0/0 tools have correct server URL",
+      "severity": "info"
+    }
+  ],
+  "phase4_postman_tests": [
+    {
+      "test": "4.1 Postman Collection Generated",
+      "pass": true,
+      "details": "Saved to: C:\\Users\\Arvanit Telaku\\Desktop\\Projects\\vapi-caseboost-voice-assistant\\POSTMAN-PRE-CALL-TESTS.json",
+      "severity": "info"
+    },
+    {
+      "test": "4.2 Test Cases Created",
+      "pass": true,
+      "details": "4 test cases: Health, Check Availability, Book Appointment, Capture Data",
+      "severity": "info"
+    }
+  ],
+  "phase5_data_flow": [
+    {
+      "test": "5.1 GHL → VAPI Variable Mapping",
+      "pass": true,
+      "details": "5 critical variables mapped",
+      "severity": "info"
+    },
+    {
+      "test": "5.2 GHL Template Syntax",
+      "pass": true,
+      "details": "Uses underscore notation (e.g., {{contact.firm_name}})",
+      "severity": "info"
+    },
+    {
+      "test": "5.3 VAPI → Server Webhook",
+      "pass": true,
+      "details": "Webhook endpoint configured: POST /webhook/vapi",
+      "severity": "info"
+    },
+    {
+      "test": "5.4 Server → GHL API",
+      "pass": true,
+      "details": "GHL client configured for calendar and contact updates",
+      "severity": "info"
+    }
+  ],
+  "issues": [],
+  "warnings": [
+    {
+      "phase": "phase1_code_audit",
+      "test": "1.11 Prompt File Structure",
+      "details": "Tools: true, Calendar: false, Transfer: true"
+    },
+    {
+      "phase": "phase1_code_audit",
+      "test": "1.12 Prompt Placeholder Handling",
+      "details": "Explicitly avoids reading placeholder text literally"
+    },
+    {
+      "phase": "phase2_configuration",
+      "test": "2.5 GHL Calendar API",
+      "details": "Status: timeout of 10000ms exceeded"
+    },
+    {
+      "phase": "phase3_integrations",
+      "test": "3.3 Squad Default Assistant",
+      "details": "Check start node configuration"
+    },
+    {
+      "phase": "phase3_integrations",
+      "test": "3.7 Calendar Tools Attached",
+      "details": "Found 0 calendar-related tools"
+    }
+  ],
+  "passed": 30,
+  "failed": 5,
+  "total": 35
+}

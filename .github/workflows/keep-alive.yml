@@ -1,0 +1,27 @@
+name: Keep Server Awake 24/7
+
+on:
+  schedule:
+    # Run every 2 minutes (free tier allows this)
+    - cron: '*/2 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Server
+        run: |
+          echo "🔄 Pinging server to keep it awake..."
+          response=$(curl -s -w "\nHTTP_CODE:%{http_code}\nTIME:%{time_total}" --max-time 30 https://vapi-caseboost-voice-assistant.onrender.com/health || echo "ERROR")
+          
+          if echo "$response" | grep -q "HTTP_CODE:200"; then
+            echo "✅ Server is awake and responding!"
+            echo "$response" | grep -v "HTTP_CODE\|TIME"
+          else
+            echo "⏳ Server may be waking up (this is normal for first ping)"
+            echo "$response"
+          fi
+          
+          echo "⏰ Next ping in 2 minutes..."
+
