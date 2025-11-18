@@ -182,16 +182,15 @@ class CallRetryService {
    */
   async handleFailedCall(contactId, phone, endedReason, customerTimezone) {
     try {
-      // 1. Get current attempt count
+      // 1. Get current attempt count (DO NOT increment - it was already incremented when call started)
       const contact = await ghlClient.getContact(contactId);
-      const currentAttempts = parseInt(contact.customFieldsParsed?.call_attempts || "0");
-      const newAttempts = currentAttempts + 1;
+      const currentAttempts = parseInt(contact.customFieldsParsed?.call_attempts || "1");
 
-      console.log(`📊 This is attempt #${newAttempts} for contact ${contactId}`);
+      console.log(`📊 Call attempt #${currentAttempts} failed for contact ${contactId}`);
 
       // 2. Calculate next retry time
       const nextCallTime = this.calculateSmartRetryTime(
-        newAttempts,
+        currentAttempts,
         endedReason,
         customerTimezone
       );
@@ -199,9 +198,8 @@ class CallRetryService {
       // 3. Determine call result
       const callResult = this.getCallResult(endedReason);
 
-      // 4. Update GHL
+      // 4. Update GHL (keep same attempt number, just update status and schedule)
       await ghlClient.updateContactCustomFields(contactId, {
-        call_attempts: newAttempts.toString(),
         call_result: callResult,
         ended_reason: endedReason,
         last_call_time: new Date().toISOString(),
@@ -209,14 +207,14 @@ class CallRetryService {
         call_status: "retry_scheduled",
       });
 
-      console.log(`✅ Updated contact ${contactId}: attempt #${newAttempts}, next call at ${nextCallTime}`);
+      console.log(`✅ Updated contact ${contactId}: attempt #${currentAttempts} failed, next call at ${nextCallTime}`);
 
       // 5. Trigger follow-up actions
-      await this.triggerFollowUpActions(contactId, phone, newAttempts, endedReason);
+      await this.triggerFollowUpActions(contactId, phone, currentAttempts, endedReason);
 
       return {
         success: true,
-        attemptNumber: newAttempts,
+        attemptNumber: currentAttempts,
         nextCallTime: nextCallTime,
       };
     } catch (error) {
