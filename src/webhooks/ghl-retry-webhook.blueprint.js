@@ -65,10 +65,11 @@ async function handleGHLRetryWebhook(req, res) {
       });
     }
 
-    // Check calling hours
+    // Check calling hours (can be bypassed for testing with ?testMode=true)
+    const testMode = req.query.testMode === 'true';
     const callingHoursCheck = callRetryService.isWithinCallingHours(detectedTimezone);
 
-    if (!callingHoursCheck.canCall) {
+    if (!testMode && !callingHoursCheck.canCall) {
       console.log(`⏰ OUTSIDE CALLING HOURS - Reason: ${callingHoursCheck.reason}`);
       console.log(`⏰ Scheduling for: ${callingHoursCheck.nextCallTime}`);
 
@@ -84,6 +85,10 @@ async function handleGHLRetryWebhook(req, res) {
         message: "Call scheduled for business hours",
         nextCallTime: callingHoursCheck.nextCallTime,
       });
+    }
+
+    if (testMode) {
+      console.log(`🧪 TEST MODE ENABLED - Bypassing calling hours check`);
     }
 
     // CRITICAL FIX: Check if scheduled time has arrived

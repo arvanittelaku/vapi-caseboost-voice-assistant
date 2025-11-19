@@ -64,10 +64,11 @@ async function handleInitialCall(req, res) {
       console.log(`⚠️ [INITIAL_CALL] Could not save timezone (non-critical): ${error.message}`);
     }
 
-    // 3. Check calling hours
+    // 3. Check calling hours (can be bypassed for testing with ?testMode=true)
+    const testMode = req.query.testMode === 'true';
     const callingHoursCheck = callRetryService.isWithinCallingHours(detectedTimezone);
 
-    if (!callingHoursCheck.canCall) {
+    if (!testMode && !callingHoursCheck.canCall) {
       console.log(`⏰ [INITIAL_CALL] OUTSIDE CALLING HOURS - Reason: ${callingHoursCheck.reason}`);
       console.log(`⏰ [INITIAL_CALL] Scheduling for: ${callingHoursCheck.nextCallTime}`);
 
@@ -84,6 +85,10 @@ async function handleInitialCall(req, res) {
         message: "Call scheduled for business hours",
         nextCallTime: callingHoursCheck.nextCallTime,
       });
+    }
+
+    if (testMode) {
+      console.log(`🧪 [INITIAL_CALL] TEST MODE ENABLED - Bypassing calling hours check`);
     }
 
     // 4. Make the call
