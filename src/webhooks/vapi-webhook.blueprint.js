@@ -470,9 +470,16 @@ async function handleCallEnded(event) {
     console.log(`[CALL_ENDED] Contact ID: ${contactId}`);
     console.log(`[CALL_ENDED] Phone: ${phone}`);
 
+    // CRITICAL: Wait for GHL to sync the call_attempts value we just wrote
+    // GHL API has a delay, so we retry reading until we get valid data
+    console.log(`⏳ Waiting for GHL to sync data (5 second delay)...`);
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
     // Get customer timezone from GHL contact
     const contact = await ghlClient.getContact(contactId);
-    const customerTimezone = contact.timezone || contact.customFieldsParsed?.timezone || "America/New_York";
+    const customerTimezone = contact.timezone || contact.customFieldsParsed?.customer_timezone || "America/New_York";
+    
+    console.log(`📊 Read from GHL: call_attempts = ${contact.customFieldsParsed?.call_attempts || 'undefined'}`);
 
     // Update basic call info
     await ghlClient.updateContactCustomFields(contactId, {
