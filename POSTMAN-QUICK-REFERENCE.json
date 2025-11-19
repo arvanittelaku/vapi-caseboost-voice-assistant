@@ -1,0 +1,294 @@
+{
+  "postman_collection": {
+    "info": {
+      "name": "VAPI CaseBoost - Complete Retry Flow Test",
+      "description": "Test the entire call retry system from initial call through 3 failed attempts"
+    },
+    "variable": [
+      {
+        "key": "server_url",
+        "value": "https://vapi-caseboost-voice-assistant.onrender.com"
+      },
+      {
+        "key": "test_contact_id",
+        "value": "PASTE_YOUR_TEST_CONTACT_ID_HERE"
+      },
+      {
+        "key": "location_id",
+        "value": "PASTE_YOUR_LOCATION_ID_HERE"
+      }
+    ]
+  },
+  
+  "tests": [
+    {
+      "test_number": 1,
+      "name": "Initial Call (Contact Created)",
+      "description": "Simulates GHL Initial Call Workflow triggering",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/ghl-initial-call",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "contact_id": "{{test_contact_id}}",
+        "first_name": "Test",
+        "last_name": "RetryFlow",
+        "phone": "+15559998888",
+        "email": "test-retry@example.com",
+        "location_id": "{{location_id}}"
+      },
+      "expected_response": {
+        "success": true,
+        "message": "Initial call processed successfully",
+        "data": {
+          "callAttempts": 1
+        }
+      },
+      "verify_in_ghl": {
+        "call_attempts": "1",
+        "call_status": "calling_now or scheduled",
+        "customer_timezone": "detected timezone"
+      }
+    },
+    
+    {
+      "test_number": 2,
+      "name": "Call Ends - No Answer (1st Failure)",
+      "description": "Simulates VAPI reporting first call failed",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/vapi",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "type": "call-ended",
+        "call": {
+          "id": "test-call-001",
+          "phoneNumber": "+15559998888",
+          "customer": {
+            "number": "+15559998888"
+          },
+          "endedReason": "no-answer-from-user",
+          "duration": 25,
+          "startedAt": "2024-01-15T14:00:00Z",
+          "endedAt": "2024-01-15T14:00:25Z"
+        },
+        "message": {
+          "type": "end-of-call-report",
+          "endedReason": "no-answer-from-user",
+          "call": {
+            "phoneNumber": "+15559998888"
+          }
+        }
+      },
+      "expected_response": {
+        "success": true,
+        "message": "Call ended event processed"
+      },
+      "verify_in_ghl": {
+        "call_attempts": "1 (STAYS at 1 - CRITICAL!)",
+        "call_status": "retry_scheduled",
+        "call_result": "no_answer",
+        "ended_reason": "no-answer-from-user",
+        "next_call_scheduled": "2 hours from now"
+      },
+      "critical_check": "call_attempts should STILL be 1, not 2!"
+    },
+    
+    {
+      "test_number": "3A",
+      "name": "Retry Too Early (Timing Check)",
+      "description": "Test that timing check blocks premature retry",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/ghl-retry",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "contact_id": "{{test_contact_id}}",
+        "first_name": "Test",
+        "last_name": "RetryFlow",
+        "phone": "+15559998888",
+        "email": "test-retry@example.com",
+        "location_id": "{{location_id}}",
+        "call_attempts": "1",
+        "call_status": "retry_scheduled",
+        "next_call_scheduled": "GET_FROM_GHL_CUSTOM_FIELD"
+      },
+      "expected_response": {
+        "success": true,
+        "message": "Scheduled time not reached yet",
+        "data": {
+          "minutesUntilCall": "> 0"
+        }
+      },
+      "critical_check": "This confirms Fix #1 is working!"
+    },
+    
+    {
+      "test_number": "3B",
+      "name": "Retry Call #1 (After Time Passed)",
+      "description": "Simulates retry after scheduled time",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/ghl-retry",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "contact_id": "{{test_contact_id}}",
+        "first_name": "Test",
+        "last_name": "RetryFlow",
+        "phone": "+15559998888",
+        "email": "test-retry@example.com",
+        "location_id": "{{location_id}}",
+        "call_attempts": "1",
+        "call_status": "retry_scheduled"
+      },
+      "manual_step_before_test": "In GHL, change next_call_scheduled to 2024-01-01T12:00:00Z (past date)",
+      "expected_response": {
+        "success": true,
+        "message": "Retry call initiated successfully",
+        "data": {
+          "attemptNumber": 2
+        }
+      },
+      "verify_in_ghl": {
+        "call_attempts": "2 (incremented from 1!)",
+        "call_status": "calling_now"
+      }
+    },
+    
+    {
+      "test_number": 4,
+      "name": "Retry #1 Fails - Triggers SMS",
+      "description": "Simulates second call failure (triggers SMS)",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/vapi",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "type": "call-ended",
+        "call": {
+          "id": "test-call-002",
+          "phoneNumber": "+15559998888",
+          "customer": {
+            "number": "+15559998888"
+          },
+          "endedReason": "no-answer-from-user",
+          "duration": 22,
+          "startedAt": "2024-01-15T16:00:00Z",
+          "endedAt": "2024-01-15T16:00:22Z"
+        },
+        "message": {
+          "type": "end-of-call-report",
+          "endedReason": "no-answer-from-user"
+        }
+      },
+      "expected_response": {
+        "success": true,
+        "message": "Call ended event processed"
+      },
+      "verify_in_ghl": {
+        "call_attempts": "2 (STAYS at 2!)",
+        "call_status": "retry_scheduled",
+        "sms_sent": "yes (SMS TRIGGERED!)",
+        "sms_sent_at": "current time"
+      },
+      "critical_check": "SMS should be sent after 2nd failed attempt"
+    },
+    
+    {
+      "test_number": 5,
+      "name": "Retry Call #2 (Final Attempt)",
+      "description": "Simulates third and final retry call",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/ghl-retry",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "contact_id": "{{test_contact_id}}",
+        "first_name": "Test",
+        "last_name": "RetryFlow",
+        "phone": "+15559998888",
+        "email": "test-retry@example.com",
+        "location_id": "{{location_id}}",
+        "call_attempts": "2",
+        "call_status": "retry_scheduled"
+      },
+      "manual_step_before_test": "In GHL, change next_call_scheduled to 2024-01-01T12:00:00Z",
+      "expected_response": {
+        "success": true,
+        "message": "Retry call initiated successfully",
+        "data": {
+          "attemptNumber": 3
+        }
+      },
+      "verify_in_ghl": {
+        "call_attempts": "3 (final attempt!)"
+      }
+    },
+    
+    {
+      "test_number": 6,
+      "name": "Final Failure - Triggers Manual Follow-Up",
+      "description": "Simulates 3rd call failure (triggers manual alert)",
+      "method": "POST",
+      "url": "{{server_url}}/webhook/vapi",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "type": "call-ended",
+        "call": {
+          "id": "test-call-003",
+          "phoneNumber": "+15559998888",
+          "customer": {
+            "number": "+15559998888"
+          },
+          "endedReason": "no-answer-from-user",
+          "duration": 20,
+          "startedAt": "2024-01-15T18:00:00Z",
+          "endedAt": "2024-01-15T18:00:20Z"
+        },
+        "message": {
+          "type": "end-of-call-report",
+          "endedReason": "no-answer-from-user"
+        }
+      },
+      "expected_response": {
+        "success": true,
+        "message": "Call ended event processed"
+      },
+      "verify_in_ghl": {
+        "call_attempts": "3 (STAYS at 3!)",
+        "call_status": "needs_manual_followup (TRIGGERED!)",
+        "tags": "Should have 'Needs Manual Follow-Up' tag"
+      },
+      "verify_email": "Check if 'Manual Follow-Up Alert' workflow sent email",
+      "critical_check": "After 3 attempts, system triggers manual follow-up!"
+    }
+  ],
+  
+  "flow_summary": {
+    "step_1": "Initial call (attempts: 0→1)",
+    "step_2": "Call fails (attempts: 1→1, schedule retry)",
+    "step_3": "Retry #1 (attempts: 1→2)",
+    "step_4": "Retry fails (attempts: 2→2, send SMS)",
+    "step_5": "Retry #2 (attempts: 2→3)",
+    "step_6": "Final fail (attempts: 3→3, manual alert)"
+  },
+  
+  "success_criteria": [
+    "Attempts never double-count (stay same when calls fail)",
+    "Timing check blocks early retries (Fix #1)",
+    "SMS sent after 2nd failed attempt",
+    "Manual follow-up after 3rd failed attempt",
+    "All GHL custom fields update correctly",
+    "Tag 'Needs Manual Follow-Up' added",
+    "Email sent to team"
+  ]
+}
+
