@@ -221,6 +221,45 @@ class GHLClient {
   }
 
   /**
+   * Get custom field definitions to map IDs to keys
+   */
+  async getCustomFieldDefinitions() {
+    try {
+      const url = `${this.baseUrl}/locations/${process.env.GHL_LOCATION_ID}/customFields`;
+      
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+        },
+      });
+
+      if (!response.ok) {
+        console.warn(`[GHL] ⚠️ Could not fetch custom field definitions (${response.status})`);
+        return null;
+      }
+
+      const result = await response.json();
+      const fields = result.customFields || [];
+      
+      // Create ID to key mapping
+      const idToKeyMap = {};
+      fields.forEach(field => {
+        if (field.id && field.fieldKey) {
+          idToKeyMap[field.id] = field.fieldKey;
+        }
+      });
+      
+      console.log(`[GHL] ✅ Loaded ${Object.keys(idToKeyMap).length} custom field definitions`);
+      return idToKeyMap;
+    } catch (error) {
+      console.warn(`[GHL] ⚠️ Error fetching custom field definitions:`, error.message);
+      return null;
+    }
+  }
+
+  /**
    * Get contact with parsed custom fields
    */
   async getContact(contactId) {
@@ -246,28 +285,31 @@ class GHLClient {
       const result = await response.json();
       const contact = result.contact || result;
 
-      // DEBUG: Log raw response
-      console.log(`[GHL] 🔍 RAW RESPONSE:`, JSON.stringify(result, null, 2));
-      console.log(`[GHL] 🔍 customFields array:`, JSON.stringify(contact.customFields, null, 2));
+      // Get field ID to key mapping (cache this in production)
+      const fieldMap = await this.getCustomFieldDefinitions();
 
       // Parse custom fields array into object
       if (contact.customFields && Array.isArray(contact.customFields)) {
         const parsedFields = {};
-        console.log(`[GHL] 🔍 Parsing ${contact.customFields.length} custom fields...`);
         
-        contact.customFields.forEach((field, index) => {
-          const key = field.key || field.name;
+        contact.customFields.forEach((field) => {
+          // GHL returns fields with "id" and "value" properties
+          // We need to map the ID to the field key name
+          let key = field.key || field.name || field.fieldKey;
+          
+          // If no key found, try to map from ID
+          if (!key && field.id && fieldMap && fieldMap[field.id]) {
+            key = fieldMap[field.id];
+          }
+          
           const value = field.value || field.field_value;
-          console.log(`[GHL] 🔍 Field ${index + 1}: key="${key}", value="${value}"`);
+          
           if (key) {
             parsedFields[key] = value;
           }
         });
         
         contact.customFieldsParsed = parsedFields;
-        console.log(`[GHL] 🔍 Parsed fields object:`, JSON.stringify(parsedFields, null, 2));
-      } else {
-        console.warn(`[GHL] ⚠️ customFields is missing or not an array!`);
       }
 
       console.log(`[GHL] Contact retrieved successfully`);
