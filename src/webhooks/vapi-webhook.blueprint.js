@@ -470,16 +470,37 @@ async function handleCallEnded(event) {
     console.log(`[CALL_ENDED] Contact ID: ${contactId}`);
     console.log(`[CALL_ENDED] Phone: ${phone}`);
 
-    // CRITICAL: Wait for GHL to sync the call_attempts value we just wrote
-    // GHL API has a delay, so we retry reading until we get valid data
-    console.log(`⏳ Waiting for GHL to sync data (5 second delay)...`);
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    // Get customer timezone from GHL contact
-    const contact = await ghlClient.getContact(contactId);
-    const customerTimezone = contact.timezone || contact.customFieldsParsed?.customer_timezone || "America/New_York";
-    
-    console.log(`📊 Read from GHL: call_attempts = ${contact.customFieldsParsed?.call_attempts || 'undefined'}`);
+      // CRITICAL: Retry reading from GHL until we get valid call_attempts data
+      // GHL API has significant delay, so we need multiple retries with backoff
+      console.log(`⏳ Waiting for GHL to sync data (retry with exponential backoff)...`);
+      
+      let contact;
+      let attempts = 0;
+      const maxAttempts = 5;
+      const delays = [3000, 5000, 7000, 10000, 15000]; // Progressive delays in ms
+      
+      while (attempts < maxAttempts) {
+        attempts++;
+        console.log(`🔄 Read attempt ${attempts}/${maxAttempts} (waiting ${delays[attempts-1]/1000}s)...`);
+        await new Promise(resolve => setTimeout(resolve, delays[attempts-1]));
+        
+        contact = await ghlClient.getContact(contactId);
+        const callAttemptsValue = contact.customFieldsParsed?.call_attempts;
+        
+        console.log(`📊 Read from GHL: call_attempts = ${callAttemptsValue || 'undefined'}`);
+        
+        // If we got valid data (not undefined and not "0"), break
+        if (callAttemptsValue && callAttemptsValue !== "0") {
+          console.log(`✅ Got valid call_attempts data: ${callAttemptsValue}`);
+          break;
+        }
+        
+        if (attempts === maxAttempts) {
+          console.warn(`⚠️ Failed to get valid call_attempts after ${maxAttempts} attempts, using default`);
+        }
+      }
+      
+      const customerTimezone = contact.timezone || contact.customFieldsParsed?.customer_timezone || "America/New_York";
 
     // Update basic call info
     await ghlClient.updateContactCustomFields(contactId, {
