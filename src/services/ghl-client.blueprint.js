@@ -246,17 +246,28 @@ class GHLClient {
       const result = await response.json();
       const contact = result.contact || result;
 
+      // DEBUG: Log raw response
+      console.log(`[GHL] 🔍 RAW RESPONSE:`, JSON.stringify(result, null, 2));
+      console.log(`[GHL] 🔍 customFields array:`, JSON.stringify(contact.customFields, null, 2));
+
       // Parse custom fields array into object
       if (contact.customFields && Array.isArray(contact.customFields)) {
         const parsedFields = {};
-        contact.customFields.forEach((field) => {
+        console.log(`[GHL] 🔍 Parsing ${contact.customFields.length} custom fields...`);
+        
+        contact.customFields.forEach((field, index) => {
           const key = field.key || field.name;
           const value = field.value || field.field_value;
+          console.log(`[GHL] 🔍 Field ${index + 1}: key="${key}", value="${value}"`);
           if (key) {
             parsedFields[key] = value;
           }
         });
+        
         contact.customFieldsParsed = parsedFields;
+        console.log(`[GHL] 🔍 Parsed fields object:`, JSON.stringify(parsedFields, null, 2));
+      } else {
+        console.warn(`[GHL] ⚠️ customFields is missing or not an array!`);
       }
 
       console.log(`[GHL] Contact retrieved successfully`);
