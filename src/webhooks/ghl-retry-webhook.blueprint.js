@@ -117,10 +117,13 @@ async function handleGHLRetryWebhook(req, res) {
     console.log(`✅ SCHEDULED TIME HAS ARRIVED - Proceeding with call`);
 
     // Get current attempt count
+    console.log(`🔍 DEBUG: All custom fields:`, JSON.stringify(contact.customFieldsParsed, null, 2));
+    console.log(`🔍 DEBUG: call_attempts value:`, contact.customFieldsParsed?.call_attempts);
+    
     const currentAttempts = parseInt(contact.customFieldsParsed?.call_attempts || "0");
     const newAttempts = currentAttempts + 1;
 
-    console.log(`📞 Making retry call attempt #${newAttempts}`);
+    console.log(`📞 Making retry call attempt #${newAttempts} (from ${currentAttempts})`);
 
     // Update status to "calling_now"
     await ghlClient.updateContactCustomFields(contactIdFromBody, {
