@@ -1,0 +1,23 @@
+{
+  "contactId": "{{contact.id}}",
+  "call_attempts": "{{contact.call_attempts}}",
+  "call_status": "{{contact.call_status}}",
+  "next_call_scheduled": "{{contact.next_call_scheduled}}",
+  "customer": {
+    "number": "{{contact.phone}}",
+    "name": "{{contact.first_name}} {{contact.last_name}}",
+    "email": "{{contact.email}}"
+  },
+  "assistantOverrides": {
+    "variableValues": {
+      "contact_id": "{{contact.id}}",
+      "firstName": "{{contact.first_name}}",
+      "lastName": "{{contact.last_name}}",
+      "email": "{{contact.email}}",
+      "phone": "{{contact.phone}}",
+      "fullName": "{{contact.first_name}} {{contact.last_name}}",
+      "call_attempts": "{{contact.call_attempts}}"
+    }
+  }
+}
+

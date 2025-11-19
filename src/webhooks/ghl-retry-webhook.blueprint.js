@@ -116,14 +116,21 @@ async function handleGHLRetryWebhook(req, res) {
 
     console.log(`✅ SCHEDULED TIME HAS ARRIVED - Proceeding with call`);
 
-    // Get current attempt count
+    // Get current attempt count from GHL workflow payload OR GHL contact
+    // IMPORTANT: GHL workflow should pass call_attempts in the payload to avoid read delay issues
     console.log(`🔍 DEBUG: All custom fields:`, JSON.stringify(contact.customFieldsParsed, null, 2));
-    console.log(`🔍 DEBUG: call_attempts value:`, contact.customFieldsParsed?.call_attempts);
+    console.log(`🔍 DEBUG: call_attempts from GHL API:`, contact.customFieldsParsed?.call_attempts);
+    console.log(`🔍 DEBUG: call_attempts from webhook body:`, req.body.call_attempts);
     
-    const currentAttempts = parseInt(contact.customFieldsParsed?.call_attempts || "0");
+    // Use value from webhook payload if available (preferred), otherwise from GHL contact
+    const currentAttemptsStr = req.body.call_attempts || 
+                               assistantOverrides?.variableValues?.call_attempts ||
+                               contact.customFieldsParsed?.call_attempts || 
+                               "0";
+    const currentAttempts = parseInt(currentAttemptsStr);
     const newAttempts = currentAttempts + 1;
 
-    console.log(`📞 Making retry call attempt #${newAttempts} (from ${currentAttempts})`);
+    console.log(`📞 Making retry call attempt #${newAttempts} (current: ${currentAttempts}, source: ${req.body.call_attempts ? 'webhook payload' : 'GHL API'})`);
 
     // Update status to "calling_now"
     await ghlClient.updateContactCustomFields(contactIdFromBody, {

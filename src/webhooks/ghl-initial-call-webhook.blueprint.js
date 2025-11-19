@@ -143,17 +143,21 @@ async function handleInitialCall(req, res) {
     console.log(`✅ [INITIAL_CALL] Call initiated successfully`);
     console.log(`   Call ID: ${callResponse.id}`);
 
-    // 5. Update GHL
+    // 5. Update GHL (Note: We're setting attempts to 1 for the first call)
     await ghlClient.updateContactCustomFields(contactId, {
       call_status: "calling_now",
       call_attempts: "1",
       last_call_time: new Date().toISOString(),
+      customer_timezone: detectedTimezone, // Save timezone too
     });
+
+    console.log(`✅ [INITIAL_CALL] Contact updated: call_attempts set to 1`);
 
     return res.json({ 
       success: true, 
       callId: callResponse.id,
       message: "Initial call initiated",
+      attemptNumber: 1,
     });
   } catch (error) {
     console.error("[INITIAL_CALL] Error:", error.message);
