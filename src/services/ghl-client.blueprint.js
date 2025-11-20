@@ -183,13 +183,24 @@ class GHLClient {
         customFields
       );
 
+      // Get reverse mapping: key -> ID
+      const fieldMap = this.getCustomFieldDefinitions();
+      const reverseMap = Object.entries(fieldMap).reduce((acc, [id, key]) => {
+        acc[key] = id;
+        return acc;
+      }, {});
+
       // Convert object to array format required by GHL API
-      // From: { booking_date: "2025-11-04", booking_hour: "10:00 AM" }
-      // To: [{ key: "booking_date", field_value: "2025-11-04" }, ...]
-      const customFieldsArray = Object.entries(customFields).map(([key, value]) => ({
-        key: key,
-        field_value: value
-      }));
+      // CRITICAL: GHL requires field IDs, not key names!
+      // From: { appointment_date: "2025-11-04", appointment_time: "10:00 AM" }
+      // To: [{ id: "SeT9fAreSctxh4UwbVY7", field_value: "2025-11-04" }, ...]
+      const customFieldsArray = Object.entries(customFields).map(([key, value]) => {
+        const fieldId = reverseMap[key] || key; // Use ID if found, fallback to key
+        return {
+          id: fieldId, // Use 'id' not 'key'!
+          field_value: value
+        };
+      });
 
       console.log(`[GHL] Converted to array format:`, JSON.stringify(customFieldsArray, null, 2));
 
