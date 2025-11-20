@@ -221,42 +221,27 @@ class GHLClient {
   }
 
   /**
-   * Get custom field definitions to map IDs to keys
+   * Static mapping of GHL custom field IDs to keys
+   * Built from actual GHL API responses since dynamic fetch requires additional permissions
    */
-  async getCustomFieldDefinitions() {
-    try {
-      const url = `${this.baseUrl}/locations/${process.env.GHL_LOCATION_ID}/customFields`;
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          Version: "2021-07-28",
-        },
-      });
-
-      if (!response.ok) {
-        console.warn(`[GHL] ⚠️ Could not fetch custom field definitions (${response.status})`);
-        return null;
-      }
-
-      const result = await response.json();
-      const fields = result.customFields || [];
-      
-      // Create ID to key mapping
-      const idToKeyMap = {};
-      fields.forEach(field => {
-        if (field.id && field.fieldKey) {
-          idToKeyMap[field.id] = field.fieldKey;
-        }
-      });
-      
-      console.log(`[GHL] ✅ Loaded ${Object.keys(idToKeyMap).length} custom field definitions`);
-      return idToKeyMap;
-    } catch (error) {
-      console.warn(`[GHL] ⚠️ Error fetching custom field definitions:`, error.message);
-      return null;
-    }
+  getCustomFieldDefinitions() {
+    // Hardcoded mapping based on your GHL location's custom fields
+    const fieldMap = {
+      "SeT9fAreSctxh4UwbVY7": "appointment_date",
+      "nq38tJ2SMcNVMRAdkLTp": "appointment_time",
+      "d7JRUzTZ60nkvxaRIQuk": "customer_timezone", // Also used as "timezone"
+      "bR1W8sYoA547a5M1wdAg": "confirmation_status",
+      "hXOKgc3cNzEYvqtN8eD7": "call_status",
+      "n1CWRQjpas1nB4pJFDAt": "call_duration",
+      "0qiZf2qMJ52zl0kRxVU7": "ended_reason",
+      "XywdtgZhUHyIFvFqaK4S": "call_attempts",
+      "TwwQBebJ10uRo1GezUxb": "last_call_time",
+      "p6shP7yFlsZCshAeLtEn": "call_result",
+      "1IrvCdBS7SKFFrRjeWnO": "next_call_scheduled",
+    };
+    
+    console.log(`[GHL] ✅ Using static field mapping (${Object.keys(fieldMap).length} fields)`);
+    return fieldMap;
   }
 
   /**
@@ -285,8 +270,8 @@ class GHLClient {
       const result = await response.json();
       const contact = result.contact || result;
 
-      // Get field ID to key mapping (cache this in production)
-      const fieldMap = await this.getCustomFieldDefinitions();
+      // Get field ID to key mapping (static mapping)
+      const fieldMap = this.getCustomFieldDefinitions();
 
       // Parse custom fields array into object
       if (contact.customFields && Array.isArray(contact.customFields)) {
@@ -310,6 +295,7 @@ class GHLClient {
         });
         
         contact.customFieldsParsed = parsedFields;
+        console.log(`[GHL] ✅ Parsed ${Object.keys(parsedFields).length} custom fields`);
       }
 
       console.log(`[GHL] Contact retrieved successfully`);
