@@ -31,7 +31,8 @@ async function handleVAPIWebhook(req, res) {
     console.log("[WEBHOOK] Assistant ID:", event.assistantId || "N/A");
 
     // Handle call-ended events (for retry logic)
-    if (event.type === "call-ended" || event.type === "end-of-call-report") {
+    const eventType = event.type || event.message?.type;
+    if (eventType === "call-ended" || eventType === "end-of-call-report") {
       console.log("[WEBHOOK] Call ended event detected");
       await handleCallEnded(event);
       return res.json({ success: true, message: "Call ended event processed" });
@@ -444,7 +445,8 @@ function findAlternativeSlots(requestedTime, busySlots, count = 3) {
  */
 async function handleCallEnded(event) {
   try {
-    const call = event.call || event;
+    // Handle both direct event and nested message structure
+    const call = event.call || event.message?.call || event;
     const endedReason = call.endedReason || call.ended_reason;
     const duration = call.duration || 0;
     const transcript = call.transcript || "";
@@ -457,6 +459,7 @@ async function handleCallEnded(event) {
       call?.assistantOverrides?.variableValues || 
       call?.variableValues ||
       event?.assistantOverrides?.variableValues ||
+      event?.message?.call?.assistantOverrides?.variableValues ||
       {};
 
     const contactId = variableValues.contact_id || variableValues.contactId;
