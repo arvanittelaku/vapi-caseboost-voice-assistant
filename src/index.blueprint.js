@@ -65,6 +65,49 @@ app.post("/webhook/update-appointment-status", appointmentWebhooks.handleUpdateA
 app.post("/webhook/check-availability", appointmentWebhooks.handleCheckAvailability);
 app.post("/webhook/book-appointment", appointmentWebhooks.handleBookNewAppointment);
 
+// Temporary test endpoint to get appointments
+app.get("/test-get-appointments", async (req, res) => {
+  try {
+    const calendarId = process.env.GHL_CALENDAR_ID || "yipdEzKHohzoYmhg2Ctv";
+    
+    // Try the appointments endpoint with calendarId
+    const url = `https://services.leadconnectorhq.com/calendars/events/appointments?calendarId=${calendarId}`;
+    
+    console.log("Fetching appointments from:", url);
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+        Version: "2021-07-28",
+      },
+    });
+    
+    const responseText = await response.text();
+    console.log("GHL API Response Status:", response.status);
+    console.log("GHL API Response:", responseText);
+    
+    if (!response.ok) {
+      return res.status(response.status).json({ 
+        error: "GHL API Error", 
+        status: response.status,
+        details: responseText 
+      });
+    }
+    
+    const data = JSON.parse(responseText);
+    
+    return res.json({ 
+      success: true, 
+      appointments: data.events || data || [],
+      message: "All appointments for calendar: " + calendarId
+    });
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   console.log(`[404] ${req.method} ${req.path}`);
@@ -88,6 +131,7 @@ app.listen(PORT, () => {
   console.log(`📅 Update Appointment: POST /webhook/update-appointment-status`);
   console.log(`🗓️  Check Availability: POST /webhook/check-availability`);
   console.log(`📆 Book Appointment: POST /webhook/book-appointment`);
+  console.log(`🧪 TEST: GET /test-get-appointments`);
   console.log(`💚 Health: GET /health`);
   console.log(`\n✅ Ready to receive VAPI requests!\n`);
 });

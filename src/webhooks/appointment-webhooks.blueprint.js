@@ -222,7 +222,8 @@ async function handleBookNewAppointment(req, res) {
     const newAppointment = await ghlClient.createCalendarAppointment(CALENDAR_ID, {
       contactId: contactId,
       startTime: startTimeMs,
-      title: title
+      title: title,
+      assignedUserId: "kt90MkHgpfkzwHXA4E5m" // Required: User who manages the appointment
     });
 
     console.log(`✅ New appointment booked: ${newAppointment.id}`);

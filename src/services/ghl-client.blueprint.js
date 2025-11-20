@@ -112,6 +112,7 @@ class GHLClient {
         startTime: startTimeISO, // ISO 8601 format required!
         title: appointmentData.title || "Appointment",
         appointmentStatus: "confirmed",
+        assignedUserId: appointmentData.assignedUserId || "kt90MkHgpfkzwHXA4E5m", // Required field
       };
 
       console.log(`📤 [GHL] Payload:`, JSON.stringify(payload, null, 2));
@@ -413,7 +414,8 @@ class GHLClient {
   }
 
   /**
-   * Cancel/Delete a calendar appointment
+   * Cancel a calendar appointment by updating its status
+   * Note: GHL API doesn't support DELETE endpoint, so we update status to "cancelled"
    */
   async cancelAppointment(appointmentId) {
     try {
@@ -422,11 +424,13 @@ class GHLClient {
       const url = `${this.baseUrl}/calendars/events/appointments/${appointmentId}`;
 
       const response = await fetch(url, {
-        method: "DELETE",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           Version: "2021-07-28",
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ appointmentStatus: "cancelled" }),
       });
 
       if (!response.ok) {
@@ -435,8 +439,8 @@ class GHLClient {
         throw new Error(`Failed to cancel appointment: ${response.status}`);
       }
 
-      console.log(`✅ [GHL] Appointment canceled successfully`);
-      return { success: true, message: "Appointment canceled" };
+      console.log(`✅ [GHL] Appointment ${appointmentId} cancelled successfully!`);
+      return await response.json();
     } catch (error) {
       console.error("[GHL] Error canceling appointment:", error.message);
       throw error;
