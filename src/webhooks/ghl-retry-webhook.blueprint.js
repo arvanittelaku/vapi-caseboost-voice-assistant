@@ -91,10 +91,10 @@ async function handleGHLRetryWebhook(req, res) {
       console.log(`🧪 TEST MODE ENABLED - Bypassing calling hours check`);
     }
 
-    // CRITICAL FIX: Check if scheduled time has arrived
+    // CRITICAL FIX: Check if scheduled time has arrived (skip in test mode)
     const scheduledTimeStr = contact.customFieldsParsed?.next_call_scheduled;
     
-    if (scheduledTimeStr) {
+    if (!testMode && scheduledTimeStr) {
       const scheduledTime = DateTime.fromISO(scheduledTimeStr, { zone: detectedTimezone });
       const now = DateTime.now().setZone(detectedTimezone);
 
@@ -112,6 +112,10 @@ async function handleGHLRetryWebhook(req, res) {
           minutesUntil: minutesUntil
         });
       }
+    }
+
+    if (testMode && scheduledTimeStr) {
+      console.log(`🧪 TEST MODE - Bypassing scheduled time check`);
     }
 
     console.log(`✅ SCHEDULED TIME HAS ARRIVED - Proceeding with call`);
