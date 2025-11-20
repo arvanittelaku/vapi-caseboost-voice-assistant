@@ -379,6 +379,103 @@ class GHLClient {
       throw error;
     }
   }
+
+  /**
+   * Get appointment details by ID
+   */
+  async getAppointment(appointmentId) {
+    try {
+      console.log(`[GHL] Getting appointment ${appointmentId}...`);
+
+      const url = `${this.baseUrl}/calendars/events/appointments/${appointmentId}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[GHL] Get appointment failed:", errorText);
+        throw new Error(`Failed to get appointment: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ [GHL] Appointment retrieved successfully`);
+      return result;
+    } catch (error) {
+      console.error("[GHL] Error getting appointment:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Cancel/Delete a calendar appointment
+   */
+  async cancelAppointment(appointmentId) {
+    try {
+      console.log(`🗑️ [GHL] Canceling appointment ${appointmentId}...`);
+
+      const url = `${this.baseUrl}/calendars/events/appointments/${appointmentId}`;
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[GHL] Cancel appointment failed:", errorText);
+        throw new Error(`Failed to cancel appointment: ${response.status}`);
+      }
+
+      console.log(`✅ [GHL] Appointment canceled successfully`);
+      return { success: true, message: "Appointment canceled" };
+    } catch (error) {
+      console.error("[GHL] Error canceling appointment:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Update appointment status
+   */
+  async updateAppointmentStatus(appointmentId, status) {
+    try {
+      console.log(`📝 [GHL] Updating appointment ${appointmentId} status to: ${status}`);
+
+      const url = `${this.baseUrl}/calendars/events/appointments/${appointmentId}`;
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ appointmentStatus: status }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[GHL] Update appointment failed:", errorText);
+        throw new Error(`Failed to update appointment: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ [GHL] Appointment status updated successfully`);
+      return result;
+    } catch (error) {
+      console.error("[GHL] Error updating appointment:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = new GHLClient();

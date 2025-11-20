@@ -5,6 +5,7 @@ const cors = require("cors");
 const vapiWebhookHandler = require("./webhooks/vapi-webhook.blueprint");
 const ghlRetryWebhookHandler = require("./webhooks/ghl-retry-webhook.blueprint");
 const ghlInitialCallHandler = require("./webhooks/ghl-initial-call-webhook.blueprint");
+const appointmentWebhooks = require("./webhooks/appointment-webhooks.blueprint");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,9 @@ app.get("/", (req, res) => {
       webhook: "POST /webhook/vapi",
       initialCall: "POST /webhook/ghl-initial-call",
       retry: "POST /webhook/ghl-retry",
+      updateAppointmentStatus: "POST /webhook/update-appointment-status",
+      checkAvailability: "POST /webhook/check-availability",
+      bookAppointment: "POST /webhook/book-appointment",
     },
     documentation: "API server for VAPI voice assistant with GHL integration",
   });
@@ -56,6 +60,11 @@ app.post("/webhook/ghl-initial-call", ghlInitialCallHandler);
 // GHL retry webhook endpoint (called by GHL workflow for scheduled retries)
 app.post("/webhook/ghl-retry", ghlRetryWebhookHandler);
 
+// Appointment management webhooks (called by VAPI function tools)
+app.post("/webhook/update-appointment-status", appointmentWebhooks.handleUpdateAppointmentStatus);
+app.post("/webhook/check-availability", appointmentWebhooks.handleCheckAvailability);
+app.post("/webhook/book-appointment", appointmentWebhooks.handleBookNewAppointment);
+
 // 404 handler
 app.use((req, res) => {
   console.log(`[404] ${req.method} ${req.path}`);
@@ -76,6 +85,9 @@ app.listen(PORT, () => {
   console.log(`📡 Webhook: POST /webhook/vapi`);
   console.log(`📞 Initial Call: POST /webhook/ghl-initial-call`);
   console.log(`🔄 Retry: POST /webhook/ghl-retry`);
+  console.log(`📅 Update Appointment: POST /webhook/update-appointment-status`);
+  console.log(`🗓️  Check Availability: POST /webhook/check-availability`);
+  console.log(`📆 Book Appointment: POST /webhook/book-appointment`);
   console.log(`💚 Health: GET /health`);
   console.log(`\n✅ Ready to receive VAPI requests!\n`);
 });
