@@ -4,7 +4,8 @@ const ghlClient = require("../services/ghl-client.blueprint");
 const callRetryService = require("../services/call-retry-service.blueprint");
 
 const CALENDAR_ID = process.env.GHL_CALENDAR_ID;
-const CALENDAR_TIMEZONE = process.env.CALENDAR_TIMEZONE || "America/New_York";
+const CALENDAR_TIMEZONE = "Europe/London"; // Calendar is locked to London timezone
+const USER_TIMEZONE = process.env.CALENDAR_TIMEZONE || "America/New_York"; // User's actual timezone
 
 // Working hours: 9 AM - 5 PM, Monday-Friday
 const WORKING_HOURS = {
@@ -12,6 +13,25 @@ const WORKING_HOURS = {
   end: 17, // 5 PM
   days: [1, 2, 3, 4, 5], // Mon-Fri
 };
+
+/**
+ * Convert a time from one timezone to another
+ */
+function convertTimezone(dateTimeString, fromTz, toTz) {
+  const dt = DateTime.fromISO(dateTimeString, { zone: fromTz });
+  return dt.setZone(toTz);
+}
+
+/**
+ * Convert slots from calendar timezone to user timezone
+ */
+function convertSlotsToUserTimezone(slots) {
+  return slots.map(slot => {
+    const londonTime = DateTime.fromISO(slot, { zone: CALENDAR_TIMEZONE });
+    const userTime = londonTime.setZone(USER_TIMEZONE);
+    return userTime.toISO();
+  });
+}
 
 /**
  * Main webhook handler
@@ -423,8 +443,8 @@ function parseUserDateTime(dateStr, timeStr, timezone) {
 
   const now = DateTime.now().setZone(timezone);
 
-  // Handle relative dates
-  let targetDate = now;
+  // Handle relative dates and specific date formats
+  let targetDate = null;
 
   const dateLower = String(dateStr).toLowerCase();
 
@@ -432,21 +452,46 @@ function parseUserDateTime(dateStr, timeStr, timezone) {
     targetDate = now;
   } else if (dateLower.includes("tomorrow")) {
     targetDate = now.plus({ days: 1 });
-  } else if (dateLower.includes("monday")) {
-    targetDate = now.set({ weekday: 1 });
-    if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
-  } else if (dateLower.includes("tuesday")) {
-    targetDate = now.set({ weekday: 2 });
-    if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
-  } else if (dateLower.includes("wednesday")) {
-    targetDate = now.set({ weekday: 3 });
-    if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
-  } else if (dateLower.includes("thursday")) {
-    targetDate = now.set({ weekday: 4 });
-    if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
-  } else if (dateLower.includes("friday")) {
-    targetDate = now.set({ weekday: 5 });
-    if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
+  } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    // YYYY-MM-DD format
+    targetDate = DateTime.fromISO(dateStr, { zone: timezone });
+  } else if (dateLower.includes("monday") || dateLower.includes("tuesday") || 
+             dateLower.includes("wednesday") || dateLower.includes("thursday") || 
+             dateLower.includes("friday")) {
+    // Handle weekday names
+    const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+    const weekdayIndex = weekdays.findIndex(day => dateLower.includes(day));
+    if (weekdayIndex !== -1) {
+      targetDate = now.set({ weekday: weekdayIndex + 1 });
+      if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
+    }
+  } else {
+    // Try various date formats (e.g., "24 November", "December 22")
+    const formats = [
+      "d MMMM",      // 22 December
+      "MMMM d",      // December 22
+      "d MMM",       // 22 Dec
+      "MMM d",       // Dec 22
+      "MMMM d, yyyy", // December 22, 2025
+      "d MMMM yyyy", // 22 December 2025
+    ];
+    
+    for (const format of formats) {
+      targetDate = DateTime.fromFormat(dateStr, format, { zone: timezone });
+      if (targetDate.isValid) {
+        // If year is not specified, assume current year or next year
+        if (!format.includes('yyyy')) {
+          if (targetDate < now) {
+            targetDate = targetDate.plus({ years: 1 });
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  if (!targetDate || !targetDate.isValid) {
+    return DateTime.invalid("Unable to parse date");
   }
 
   // Parse time
