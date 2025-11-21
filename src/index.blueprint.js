@@ -230,15 +230,23 @@ app.post("/webhook/update-appointment-status", appointmentWebhooks.handleUpdateA
 app.post("/webhook/check-availability", appointmentWebhooks.handleCheckAvailability);
 app.post("/webhook/book-appointment", appointmentWebhooks.handleBookNewAppointment);
 
-// Temporary test endpoint to get appointments
-app.get("/test-get-appointments", async (req, res) => {
+// Debug endpoint to check appointments for a specific date
+app.get("/debug-check-appointments", async (req, res) => {
   try {
-    const calendarId = process.env.GHL_CALENDAR_ID || "yipdEzKHohzoYmhg2Ctv";
+    const { DateTime } = require("luxon");
+    const calendarId = process.env.GHL_CALENDAR_ID;
+    const timezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
+    const dateParam = req.query.date || "2025-11-24";
     
-    // Try the appointments endpoint with calendarId
-    const url = `https://services.leadconnectorhq.com/calendars/events/appointments?calendarId=${calendarId}`;
+    const targetDate = DateTime.fromISO(dateParam, { zone: timezone });
+    const startDate = targetDate.startOf('day').toMillis();
+    const endDate = targetDate.endOf('day').toMillis();
     
-    console.log("Fetching appointments from:", url);
+    const url = `https://services.leadconnectorhq.com/calendars/events/appointments?calendarId=${calendarId}&startTime=${startDate}&endTime=${endDate}`;
+    
+    console.log("\n=== DEBUG APPOINTMENTS ===");
+    console.log("Checking appointments for:", dateParam);
+    console.log("URL:", url);
     
     const response = await fetch(url, {
       method: "GET",
@@ -249,26 +257,37 @@ app.get("/test-get-appointments", async (req, res) => {
     });
     
     const responseText = await response.text();
-    console.log("GHL API Response Status:", response.status);
-    console.log("GHL API Response:", responseText);
+    console.log("Response Status:", response.status);
+    console.log("Response:", responseText);
+    console.log("======================\n");
     
-    if (!response.ok) {
-      return res.status(response.status).json({ 
-        error: "GHL API Error", 
-        status: response.status,
-        details: responseText 
-      });
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      data = { raw: responseText };
     }
     
-    const data = JSON.parse(responseText);
+    const appointments = data.events || data.appointments || [];
     
     return res.json({ 
-      success: true, 
-      appointments: data.events || data || [],
-      message: "All appointments for calendar: " + calendarId
+      request: {
+        url,
+        date: dateParam,
+        calendarId,
+      },
+      response: {
+        status: response.status,
+        data,
+      },
+      summary: {
+        appointmentCount: Array.isArray(appointments) ? appointments.length : 0,
+        appointments: appointments,
+      },
+      hint: "If there are appointments blocking afternoon slots, they'll show here"
     });
   } catch (error) {
-    console.error("Error fetching appointments:", error);
+    console.error("Error checking appointments:", error);
     return res.status(500).json({ error: error.message });
   }
 });
