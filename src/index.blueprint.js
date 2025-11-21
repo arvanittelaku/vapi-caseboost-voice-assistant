@@ -63,6 +63,60 @@ app.get("/debug-env", (req, res) => {
   });
 });
 
+// Debug endpoint to analyze calendar configuration for slot limitations
+app.get("/debug-calendar-config", async (req, res) => {
+  try {
+    const calendarId = process.env.GHL_CALENDAR_ID;
+    const url = `https://services.leadconnectorhq.com/calendars/${calendarId}`;
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+        Version: "2021-07-28",
+        "Content-Type": "application/json",
+      },
+    });
+    
+    const data = await response.json();
+    const calendar = data.calendar || data;
+    
+    // Extract potentially problematic settings
+    const analysis = {
+      slotSettings: {
+        slotDuration: calendar.slotDuration,
+        slotInterval: calendar.slotInterval,
+        appoinmentPerDay: calendar.appoinmentPerDay,
+        appoinmentPerSlot: calendar.appoinmentPerSlot,
+      },
+      availability: {
+        openHours: calendar.openHours,
+        availabilities: calendar.availabilities,
+      },
+      restrictions: {
+        allowBookingFor: calendar.allowBookingFor,
+        allowBookingForUnit: calendar.allowBookingForUnit,
+        allowBookingAfter: calendar.allowBookingAfter,
+        allowBookingAfterUnit: calendar.allowBookingAfterUnit,
+        preBufferUnit: calendar.preBufferUnit,
+        slotBufferUnit: calendar.slotBufferUnit,
+      },
+      teamMembers: calendar.teamMembers,
+      lookBusyConfig: calendar.lookBusyConfig,
+      isActive: calendar.isActive,
+    };
+    
+    return res.json({
+      calendarId,
+      fullCalendarData: calendar,
+      analysis,
+      diagnosis: "Check if any of these settings are limiting available slots"
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Debug endpoint to get calendar details (includes assigned user/team member ID)
 app.get("/debug-ghl-calendar", async (req, res) => {
   try {
