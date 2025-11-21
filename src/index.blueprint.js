@@ -62,6 +62,72 @@ app.get("/debug-env", (req, res) => {
   });
 });
 
+// Debug endpoint to check GHL slots API response
+app.get("/debug-ghl-slots", async (req, res) => {
+  try {
+    const { DateTime } = require("luxon");
+    const calendarId = process.env.GHL_CALENDAR_ID;
+    const locationId = process.env.GHL_LOCATION_ID;
+    const timezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
+    
+    // Get tomorrow's date
+    const tomorrow = DateTime.now().setZone(timezone).plus({ days: 1 });
+    const startDate = tomorrow.toFormat("yyyy-MM-dd");
+    const endDate = tomorrow.toFormat("yyyy-MM-dd");
+    
+    const url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+    
+    console.log("\n=== DEBUG GHL SLOTS ===");
+    console.log("Request URL:", url);
+    console.log("Calendar ID:", calendarId);
+    console.log("Location ID:", locationId);
+    console.log("Timezone:", timezone);
+    console.log("Date Range:", startDate, "to", endDate);
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+        Version: "2021-07-28",
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+      },
+    });
+    
+    const responseText = await response.text();
+    console.log("Response Status:", response.status);
+    console.log("Response Body:", responseText);
+    console.log("======================\n");
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      data = { raw: responseText };
+    }
+    
+    res.json({
+      request: {
+        url,
+        calendarId,
+        locationId,
+        timezone,
+        startDate,
+        endDate,
+      },
+      response: {
+        status: response.status,
+        statusText: response.statusText,
+        data,
+      },
+    });
+  } catch (error) {
+    console.error("Error in debug-ghl-slots:", error);
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
+});
+
 // VAPI webhook endpoint
 app.post("/webhook/vapi", vapiWebhookHandler);
 
