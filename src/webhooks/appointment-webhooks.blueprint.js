@@ -23,7 +23,34 @@ async function handleUpdateAppointmentStatus(req, res) {
     console.log(`[${new Date().toISOString()}] Update Appointment Status Webhook Received`);
     console.log("================================================================================");
 
-    const { status, contactId, appointmentId, notes } = req.body;
+    // Handle both Vapi tool call format and direct format
+    let status, contactId, appointmentId, notes;
+    
+    if (req.body.message?.toolCalls) {
+      // Vapi tool call format
+      const toolCall = req.body.message.toolCalls[0];
+      console.log(`[APPT_UPDATE] Vapi tool call format detected`);
+      console.log(`[APPT_UPDATE] Tool Call ID: ${toolCall.id}`);
+      
+      // Parse arguments (Vapi sends as string or object)
+      let args = toolCall.function.arguments;
+      if (typeof args === 'string') {
+        console.log(`[APPT_UPDATE] Arguments is string, parsing JSON...`);
+        args = JSON.parse(args);
+      }
+      
+      status = args.status;
+      contactId = args.contactId;
+      appointmentId = args.appointmentId;
+      notes = args.notes;
+    } else {
+      // Direct format (for testing)
+      status = req.body.status;
+      contactId = req.body.contactId;
+      appointmentId = req.body.appointmentId;
+      notes = req.body.notes;
+      console.log(`[APPT_UPDATE] Direct format detected`);
+    }
 
     console.log(`[APPT_UPDATE] Status: ${status}`);
     console.log(`[APPT_UPDATE] Contact ID: ${contactId}`);
@@ -38,7 +65,12 @@ async function handleUpdateAppointmentStatus(req, res) {
       });
     }
 
+    // Check if this is a Vapi tool call (needs special response format)
+    const isVapiToolCall = req.body.message?.toolCalls;
+    const toolCallId = isVapiToolCall ? req.body.message.toolCalls[0].id : null;
+
     // Handle based on status
+    let result;
     switch (status.toLowerCase()) {
       case "confirmed":
         // Update appointment status to confirmed
@@ -50,11 +82,12 @@ async function handleUpdateAppointmentStatus(req, res) {
         });
 
         console.log(`✅ Appointment ${appointmentId} confirmed`);
-        return res.json({
+        result = {
           success: true,
           message: "Appointment confirmed successfully",
           status: "confirmed"
-        });
+        };
+        break;
 
       case "rescheduled":
         console.log(`🔄 User wants to reschedule - will prompt for new date/time`);
@@ -64,12 +97,13 @@ async function handleUpdateAppointmentStatus(req, res) {
           confirmation_status: "rescheduling"
         });
 
-        return res.json({
+        result = {
           success: true,
           message: "Ready to reschedule - please check availability",
           status: "rescheduling",
           requiresNewDateTime: true
-        });
+        };
+        break;
 
       case "canceled":
         console.log(`❌ User wants to cancel appointment`);
@@ -84,17 +118,32 @@ async function handleUpdateAppointmentStatus(req, res) {
         });
 
         console.log(`✅ Appointment ${appointmentId} canceled`);
-        return res.json({
+        result = {
           success: true,
           message: "Appointment canceled successfully",
           status: "canceled"
-        });
+        };
+        break;
 
       default:
         return res.status(400).json({
           success: false,
           error: `Invalid status: ${status}. Must be 'confirmed', 'rescheduled', or 'canceled'`
         });
+    }
+
+    // Return in appropriate format
+    if (isVapiToolCall) {
+      // Vapi tool call response format
+      return res.json({
+        results: [{
+          toolCallId: toolCallId,
+          result: result
+        }]
+      });
+    } else {
+      // Direct response format
+      return res.json(result);
     }
 
   } catch (error) {
