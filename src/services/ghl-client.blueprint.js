@@ -5,6 +5,7 @@ class GHLClient {
   constructor() {
     this.apiKey = process.env.GHL_API_KEY;
     this.locationId = process.env.GHL_LOCATION_ID;
+    this.userId = process.env.GHL_USER_ID; // Team member/user ID for calendar availability
     this.baseUrl = "https://services.leadconnectorhq.com";
   }
 
@@ -34,7 +35,12 @@ class GHLClient {
       console.log(`   End Timestamp: ${endDate} (${endOfDay.toISO()})`);
 
       // Use the free-slots API to get available slots
-      const url = `${this.baseUrl}/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+      // Add userId parameter if available to ensure we get all slots for the team member
+      let url = `${this.baseUrl}/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+      if (this.userId) {
+        url += `&userId=${this.userId}`;
+        console.log(`   User ID: ${this.userId}`);
+      }
 
       console.log(`   API URL: ${url}`);
 

@@ -68,6 +68,7 @@ app.get("/debug-ghl-slots", async (req, res) => {
     const { DateTime } = require("luxon");
     const calendarId = process.env.GHL_CALENDAR_ID;
     const locationId = process.env.GHL_LOCATION_ID;
+    const userId = process.env.GHL_USER_ID;
     const timezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
     
     // Get the date to check (use query param or default to Dec 24, 2025)
@@ -76,12 +77,16 @@ app.get("/debug-ghl-slots", async (req, res) => {
     const startDate = targetDate.toMillis();  // Unix timestamp in milliseconds
     const endDate = targetDate.endOf('day').toMillis();  // Unix timestamp in milliseconds
     
-    const url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+    let url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+    if (userId) {
+      url += `&userId=${userId}`;
+    }
     
     console.log("\n=== DEBUG GHL SLOTS ===");
     console.log("Request URL:", url);
     console.log("Calendar ID:", calendarId);
     console.log("Location ID:", locationId);
+    console.log("User ID:", userId || "Not set");
     console.log("Timezone:", timezone);
     console.log("Date (readable):", targetDate.toFormat("yyyy-MM-dd"));
     console.log("Start Timestamp:", startDate, "(" + targetDate.toISO() + ")");
@@ -125,6 +130,7 @@ app.get("/debug-ghl-slots", async (req, res) => {
         url,
         calendarId,
         locationId,
+        userId: userId || "Not set - ADD GHL_USER_ID to env vars!",
         timezone,
         date: targetDate.toFormat("yyyy-MM-dd"),
         startDate,
