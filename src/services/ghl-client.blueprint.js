@@ -43,6 +43,8 @@ class GHLClient {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           Version: "2021-07-28",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
         },
       });
 
