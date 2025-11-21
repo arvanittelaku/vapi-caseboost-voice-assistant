@@ -70,10 +70,10 @@ app.get("/debug-ghl-slots", async (req, res) => {
     const locationId = process.env.GHL_LOCATION_ID;
     const timezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
     
-    // Get tomorrow's date
-    const tomorrow = DateTime.now().setZone(timezone).plus({ days: 1 });
-    const startDate = tomorrow.toFormat("yyyy-MM-dd");
-    const endDate = tomorrow.toFormat("yyyy-MM-dd");
+    // Get tomorrow's date and convert to Unix timestamps (like the actual code does)
+    const tomorrow = DateTime.now().setZone(timezone).plus({ days: 1 }).startOf('day');
+    const startDate = tomorrow.toMillis();  // Unix timestamp in milliseconds
+    const endDate = tomorrow.endOf('day').toMillis();  // Unix timestamp in milliseconds
     
     const url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
     
@@ -82,7 +82,9 @@ app.get("/debug-ghl-slots", async (req, res) => {
     console.log("Calendar ID:", calendarId);
     console.log("Location ID:", locationId);
     console.log("Timezone:", timezone);
-    console.log("Date Range:", startDate, "to", endDate);
+    console.log("Date (readable):", tomorrow.toFormat("yyyy-MM-dd"));
+    console.log("Start Timestamp:", startDate, "(" + tomorrow.toISO() + ")");
+    console.log("End Timestamp:", endDate, "(" + tomorrow.endOf('day').toISO() + ")");
     
     const response = await fetch(url, {
       method: "GET",
@@ -107,19 +109,33 @@ app.get("/debug-ghl-slots", async (req, res) => {
       data = { raw: responseText };
     }
     
+    // Count slots if successful
+    let slotCount = 0;
+    if (response.ok && typeof data === 'object') {
+      for (const date in data) {
+        if (date !== 'traceId' && data[date]?.slots) {
+          slotCount += data[date].slots.length;
+        }
+      }
+    }
+    
     res.json({
       request: {
         url,
         calendarId,
         locationId,
         timezone,
+        date: tomorrow.toFormat("yyyy-MM-dd"),
         startDate,
         endDate,
+        startDateReadable: tomorrow.toISO(),
+        endDateReadable: tomorrow.endOf('day').toISO(),
       },
       response: {
         status: response.status,
         statusText: response.statusText,
         data,
+        slotCount,
       },
     });
   } catch (error) {
