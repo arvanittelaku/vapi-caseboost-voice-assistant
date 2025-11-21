@@ -63,15 +63,15 @@ app.get("/debug-env", (req, res) => {
   });
 });
 
-// Debug endpoint to get GHL users/team members
-app.get("/debug-ghl-users", async (req, res) => {
+// Debug endpoint to get calendar details (includes assigned user/team member ID)
+app.get("/debug-ghl-calendar", async (req, res) => {
   try {
-    const locationId = process.env.GHL_LOCATION_ID;
-    const url = `https://services.leadconnectorhq.com/users/?locationId=${locationId}`;
+    const calendarId = process.env.GHL_CALENDAR_ID;
+    const url = `https://services.leadconnectorhq.com/calendars/${calendarId}`;
     
-    console.log("\n=== DEBUG GHL USERS ===");
+    console.log("\n=== DEBUG GHL CALENDAR ===");
     console.log("Request URL:", url);
-    console.log("Location ID:", locationId);
+    console.log("Calendar ID:", calendarId);
     
     const response = await fetch(url, {
       method: "GET",
@@ -94,19 +94,35 @@ app.get("/debug-ghl-users", async (req, res) => {
       data = { raw: responseText };
     }
     
+    // Try to extract user/team member IDs
+    let extractedInfo = {
+      teamMembers: null,
+      assignedUsers: null,
+      userId: null,
+    };
+    
+    if (data && typeof data === 'object') {
+      // Look for common fields that might contain user IDs
+      extractedInfo.teamMembers = data.teamMembers || data.team_members || data.users;
+      extractedInfo.assignedUsers = data.assignedUsers || data.assigned_users;
+      extractedInfo.userId = data.userId || data.user_id || data.ownerId || data.owner_id;
+    }
+    
     res.json({
       request: {
         url,
-        locationId,
+        calendarId,
       },
       response: {
         status: response.status,
         statusText: response.statusText,
         data,
       },
+      extractedInfo,
+      hint: "Look for 'teamMembers', 'assignedUsers', 'userId', or similar fields in the data above",
     });
   } catch (error) {
-    console.error("Error in debug-ghl-users:", error);
+    console.error("Error in debug-ghl-calendar:", error);
     res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
