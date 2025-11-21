@@ -134,16 +134,25 @@ app.get("/debug-ghl-slots", async (req, res) => {
     const calendarId = process.env.GHL_CALENDAR_ID;
     const locationId = process.env.GHL_LOCATION_ID;
     const userId = process.env.GHL_USER_ID;
-    const timezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
+    
+    // WORKAROUND: Calendar is stuck in London timezone, so request in London timezone
+    const calendarTimezone = "Europe/London";
+    const userTimezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
     
     // Get the date to check (use query param or default to Dec 24, 2025)
     const dateParam = req.query.date || "2025-12-24";
-    const targetDate = DateTime.fromISO(dateParam, { zone: timezone }).startOf('day');
-    const startDate = targetDate.toMillis();  // Unix timestamp in milliseconds
-    const endDate = targetDate.endOf('day').toMillis();  // Unix timestamp in milliseconds
     
-    // Try WITHOUT userId to see if that's causing the filtering issue
-    let url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+    // Parse date in user's timezone, but convert to calendar timezone for API request
+    const userDate = DateTime.fromISO(dateParam, { zone: userTimezone });
+    const calendarDate = userDate.setZone(calendarTimezone).startOf('day');
+    const startDate = calendarDate.toMillis();
+    const endDate = calendarDate.endOf('day').toMillis();
+    
+    // Try requesting in CALENDAR timezone (London) instead of user timezone
+    const useCalendarTimezone = req.query.useCalendarTz !== 'false';
+    const requestTimezone = useCalendarTimezone ? calendarTimezone : userTimezone;
+    
+    let url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(requestTimezone)}`;
     
     // Add userId as query param to toggle it on/off
     const includeUserId = req.query.includeUserId !== 'false';
@@ -156,10 +165,12 @@ app.get("/debug-ghl-slots", async (req, res) => {
     console.log("Calendar ID:", calendarId);
     console.log("Location ID:", locationId);
     console.log("User ID:", userId || "Not set");
-    console.log("Timezone:", timezone);
-    console.log("Date (readable):", targetDate.toFormat("yyyy-MM-dd"));
-    console.log("Start Timestamp:", startDate, "(" + targetDate.toISO() + ")");
-    console.log("End Timestamp:", endDate, "(" + targetDate.endOf('day').toISO() + ")");
+    console.log("User Timezone:", userTimezone);
+    console.log("Calendar Timezone:", calendarTimezone);
+    console.log("Request Timezone:", requestTimezone);
+    console.log("Date (readable):", calendarDate.toFormat("yyyy-MM-dd"));
+    console.log("Start Timestamp:", startDate, "(" + calendarDate.toISO() + ")");
+    console.log("End Timestamp:", endDate, "(" + calendarDate.endOf('day').toISO() + ")");
     
     const response = await fetch(url, {
       method: "GET",
@@ -200,12 +211,14 @@ app.get("/debug-ghl-slots", async (req, res) => {
         calendarId,
         locationId,
         userId: userId || "Not set - ADD GHL_USER_ID to env vars!",
-        timezone,
-        date: targetDate.toFormat("yyyy-MM-dd"),
+        userTimezone,
+        calendarTimezone,
+        requestTimezone,
+        date: calendarDate.toFormat("yyyy-MM-dd"),
         startDate,
         endDate,
-        startDateReadable: targetDate.toISO(),
-        endDateReadable: targetDate.endOf('day').toISO(),
+        startDateReadable: calendarDate.toISO(),
+        endDateReadable: calendarDate.endOf('day').toISO(),
       },
       response: {
         status: response.status,
@@ -213,6 +226,7 @@ app.get("/debug-ghl-slots", async (req, res) => {
         data,
         slotCount,
       },
+      note: "Testing with calendar timezone (London) instead of user timezone to work around timezone mismatch",
     });
   } catch (error) {
     console.error("Error in debug-ghl-slots:", error);

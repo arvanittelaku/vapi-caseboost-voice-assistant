@@ -22,10 +22,15 @@ class GHLClient {
       console.log(`📞 [GHL] Checking calendar availability...`);
       console.log(`   Calendar ID: ${calendarId}`);
       console.log(`   Date: ${dateStr}`);
-      console.log(`   Timezone: ${timezone}`);
+      console.log(`   User Timezone: ${timezone}`);
 
-      // Convert date string to Unix timestamps (milliseconds)
-      const startOfDay = DateTime.fromISO(dateStr, { zone: timezone }).startOf('day');
+      // WORKAROUND: Calendar is locked to London timezone
+      // Request in London timezone to match calendar settings
+      const calendarTimezone = "Europe/London";
+      console.log(`   Calendar Timezone: ${calendarTimezone}`);
+
+      // Convert date string to Unix timestamps (milliseconds) in calendar timezone
+      const startOfDay = DateTime.fromISO(dateStr, { zone: timezone }).setZone(calendarTimezone).startOf('day');
       const endOfDay = startOfDay.endOf('day');
       
       const startDate = startOfDay.toMillis();
@@ -35,8 +40,8 @@ class GHLClient {
       console.log(`   End Timestamp: ${endDate} (${endOfDay.toISO()})`);
 
       // Use the free-slots API to get available slots
-      // Add userId parameter if available to ensure we get all slots for the team member
-      let url = `${this.baseUrl}/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
+      // REQUEST IN CALENDAR TIMEZONE (London) to avoid timezone mismatch
+      let url = `${this.baseUrl}/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(calendarTimezone)}`;
       if (this.userId) {
         url += `&userId=${this.userId}`;
         console.log(`   User ID: ${this.userId}`);
