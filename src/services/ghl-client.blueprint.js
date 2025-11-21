@@ -70,6 +70,9 @@ class GHLClient {
 
       const data = await response.json();
       
+      console.log(`📦 [GHL] RAW API RESPONSE:`);
+      console.log(JSON.stringify(data, null, 2));
+      
       // Extract free slots from the response
       // Response format: { "2025-11-04": { "slots": ["2025-11-04T09:00:00-05:00", ...] } }
       const freeSlots = [];

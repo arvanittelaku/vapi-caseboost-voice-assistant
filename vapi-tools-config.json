@@ -1,0 +1,154 @@
+[
+  {
+    "id": "4ccbd644-fe16-46d2-8385-bc00930bc15f",
+    "createdAt": "2025-11-20T10:20:16.272Z",
+    "updatedAt": "2025-11-20T10:22:16.191Z",
+    "type": "function",
+    "function": {
+      "name": "update_appointment_status_caseboost",
+      "strict": true,
+      "description": "Updates the appointment status based on customer response during confirmation call. Use when customer: 1) CONFIRMS they will attend (status='confirmed'), 2) Wants to CANCEL (status='cancelled'), or 3) Wants to RESCHEDULE (status='needs_reschedule'). Always provide notes about what the customer said.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "description": "Notes about the customer's response",
+            "type": "string"
+          },
+          "status": {
+            "description": "New appointment status: 'confirmed', 'cancelled', or 'needs_reschedule'",
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "cancelled",
+              "needs_reschedule"
+            ]
+          },
+          "contactId": {
+            "description": "The GHL contact ID",
+            "type": "string"
+          },
+          "appointmentId": {
+            "description": "The appointment ID to update",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appointmentId",
+          "contactId",
+          "status"
+        ]
+      }
+    },
+    "messages": [
+      {
+        "type": "request-start",
+        "content": "",
+        "blocking": false
+      }
+    ],
+    "orgId": "2c85f7d1-1eff-4c43-88cb-5be129f940c8",
+    "server": {
+      "url": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/update-appointment-status",
+      "timeoutSeconds": 20,
+      "headers": {
+        "Authorization": "Bearer dda5dde571940cb474e842d0ebc122a9eabf33f4cf407ea08bbe",
+        "ngrok-skip-browser-warning": "true"
+      }
+    },
+    "async": true
+  },
+  {
+    "id": "114582b4-d14d-4445-9e77-3cdd9fceb2a7",
+    "createdAt": "2025-11-03T10:51:48.823Z",
+    "updatedAt": "2025-11-20T10:16:42.773Z",
+    "type": "function",
+    "function": {
+      "name": "book_calendar_appointment_caseboost",
+      "description": "Books or reschedules an appointment on the calendar AFTER availability has been confirmed. Use this tool when the customer wants to: 1) Book a NEW appointment, or 2) RESCHEDULE an existing appointment. The AI must have already collected: date, time, and timezone from the customer.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "description": "Optional: Appointment title (defaults to 'Appointment')",
+            "type": "string"
+          },
+          "contactId": {
+            "description": "GHL Contact ID",
+            "type": "string"
+          },
+          "startTime": {
+            "description": "Appointment start time in ISO 8601 format (e.g., '2025-11-25T14:00:00')",
+            "type": "string"
+          },
+          "oldAppointmentId": {
+            "description": "Optional: Existing appointment ID to cancel (for rescheduling)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "contactId",
+          "startTime"
+        ]
+      }
+    },
+    "messages": [
+      {
+        "type": "request-start",
+        "content": "",
+        "blocking": false
+      }
+    ],
+    "orgId": "2c85f7d1-1eff-4c43-88cb-5be129f940c8",
+    "server": {
+      "url": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/book-appointment",
+      "timeoutSeconds": 20,
+      "headers": {
+        "Authorization": "Bearer dda5dde571940cb474e842d0ebc122a9eabf33f4cf407ea08bbaf1232ea24cf0",
+        "ngrok-skip-browser-warning": "true"
+      }
+    }
+  },
+  {
+    "id": "ec8ac721-c6e4-4d5c-928e-90acae3603f8",
+    "createdAt": "2025-11-03T10:04:15.893Z",
+    "updatedAt": "2025-11-20T10:11:13.394Z",
+    "type": "function",
+    "function": {
+      "name": "check_calendar_availability_caseboost",
+      "description": "Checks if a specific date and time is available on the calendar. Use this BEFORE booking to prevent double-bookings. The AI should ask for: 1) preferred date (e.g., \"Monday\", \"tomorrow\", \"November 3rd\"), 2) preferred time (e.g., \"2 PM\", \"14:00\", \"3 o'clock\"), and 3) timezone (e.g., \"Central Europe\", \"EST\", \"PST\"). |",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "Date in YYYY-MM-DD format (e.g., '2025-11-25')",
+            "type": "string"
+          },
+          "timezone": {
+            "description": "Timezone (defaults to 'America/New_York')",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date"
+        ]
+      }
+    },
+    "messages": [
+      {
+        "type": "request-start",
+        "content": "",
+        "blocking": false
+      }
+    ],
+    "orgId": "2c85f7d1-1eff-4c43-88cb-5be129f940c8",
+    "server": {
+      "url": "https://vapi-caseboost-voice-assistant.onrender.com/webhook/check-availability",
+      "timeoutSeconds": 20,
+      "headers": {
+        "Authorization": "Bearer dda5dde571940cb474e842d0ebc122a9eabf33f4cf407ea08bbaf1232ea24cf0",
+        "ngrok-skip-browser-warning": "true"
+      }
+    }
+  }
+]

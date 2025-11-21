@@ -51,6 +51,17 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Debug endpoint to check environment variables
+app.get("/debug-env", (req, res) => {
+  res.json({
+    GHL_CALENDAR_ID: process.env.GHL_CALENDAR_ID,
+    GHL_LOCATION_ID: process.env.GHL_LOCATION_ID,
+    GHL_API_KEY_PREFIX: process.env.GHL_API_KEY?.substring(0, 20) + "...",
+    CALENDAR_TIMEZONE: process.env.CALENDAR_TIMEZONE || "America/New_York",
+    NODE_ENV: process.env.NODE_ENV,
+  });
+});
+
 // VAPI webhook endpoint
 app.post("/webhook/vapi", vapiWebhookHandler);
 
