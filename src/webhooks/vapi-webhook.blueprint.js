@@ -109,55 +109,36 @@ async function handleCheckCalendarAvailability(toolCall, event) {
     // Support both parameter naming conventions
     const requestedDate = params.requestedDate || params.date;
     const requestedTime = params.requestedTime || params.time;
-    const timezone = params.timezone;
+    const timezone = params.timezone || CALENDAR_TIMEZONE;
 
     console.log(
-      `[CHECK_AVAILABILITY] Checking: ${requestedDate} at ${requestedTime} (${timezone})`
+      `[CHECK_AVAILABILITY] Checking: ${requestedDate} ${requestedTime ? 'at ' + requestedTime : '(all slots)'} (${timezone})`
     );
 
-    // Parse requested date/time in user's timezone
-    const userDateTime = parseUserDateTime(
-      requestedDate,
-      requestedTime,
-      timezone
-    );
+    // Parse the date (without time first)
+    const now = DateTime.now().setZone(timezone);
+    let targetDate = now;
+    
+    const dateLower = String(requestedDate || '').toLowerCase();
+    if (dateLower.includes("today")) {
+      targetDate = now;
+    } else if (dateLower.includes("tomorrow")) {
+      targetDate = now.plus({ days: 1 });
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+      targetDate = DateTime.fromISO(requestedDate, { zone: timezone });
+    }
 
-    if (!userDateTime.isValid) {
+    if (!targetDate.isValid) {
       return {
         available: false,
-        message: `I couldn't understand that date/time. Could you say it differently? For example: "Monday at 2 PM" or "November 5th at 10:30 AM"`,
+        message: `I couldn't understand that date. Could you say it differently? For example: "today", "tomorrow", or a specific date.`,
       };
     }
 
-    console.log(`[CHECK_AVAILABILITY] Parsed as: ${userDateTime.toISO()}`);
+    console.log(`[CHECK_AVAILABILITY] Parsed date as: ${targetDate.toISO()}`);
 
-    // Convert to calendar timezone
-    const calendarDateTime = userDateTime.setZone(CALENDAR_TIMEZONE);
-    console.log(
-      `[CHECK_AVAILABILITY] Calendar timezone: ${calendarDateTime.toISO()}`
-    );
-
-    // Check working hours
-    const hour = calendarDateTime.hour;
-    const dayOfWeek = calendarDateTime.weekday;
-
-    if (!WORKING_HOURS.days.includes(dayOfWeek)) {
-      return {
-        available: false,
-        message:
-          "We're only available Monday through Friday. Would you like to schedule for a weekday?",
-      };
-    }
-
-    if (hour < WORKING_HOURS.start || hour >= WORKING_HOURS.end) {
-      return {
-        available: false,
-        message: `Our hours are ${WORKING_HOURS.start} AM to ${WORKING_HOURS.end} PM. Would you like a time within those hours?`,
-      };
-    }
-
-    // Fetch free slots from GHL
-    const dateStr = calendarDateTime.toISODate();
+    // Fetch free slots from GHL for the entire day
+    const dateStr = targetDate.toISODate();
     const freeSlots = await ghlClient.checkCalendarAvailability(
       CALENDAR_ID,
       dateStr,
@@ -169,6 +150,43 @@ async function handleCheckCalendarAvailability(toolCall, event) {
       const slotTime = DateTime.fromISO(slot, { zone: CALENDAR_TIMEZONE });
       console.log(`  ${index + 1}. ${slot} (${slotTime.toFormat("h:mm a")})`);
     });
+
+    // If no specific time requested, return all available slots
+    if (!requestedTime) {
+      if (freeSlots.length === 0) {
+        return {
+          available: false,
+          message: `Unfortunately, ${targetDate.toFormat("EEEE, MMMM d")} is fully booked. Would you like to try a different day?`,
+        };
+      }
+
+      // Format slots nicely for the response
+      const formattedSlots = freeSlots.map(slotStr => {
+        const slot = DateTime.fromISO(slotStr, { zone: CALENDAR_TIMEZONE });
+        const userSlot = slot.setZone(timezone);
+        return userSlot.toFormat("h:mm a");
+      });
+
+      console.log(`[CHECK_AVAILABILITY] Returning ${freeSlots.length} available slots`);
+
+      return {
+        available: true,
+        message: `Yes! I have ${freeSlots.length} slots available on ${targetDate.toFormat("EEEE, MMMM d")}. Here are your options: ${formattedSlots.join(", ")}`,
+        slots: formattedSlots,
+      };
+    }
+
+    // If specific time requested, parse and check it
+    const userDateTime = parseUserDateTime(requestedDate, requestedTime, timezone);
+    
+    if (!userDateTime.isValid) {
+      return {
+        available: false,
+        message: `I couldn't understand that time. Could you say it differently? For example: "2 PM" or "10:30 AM"`,
+      };
+    }
+
+    const calendarDateTime = userDateTime.setZone(CALENDAR_TIMEZONE);
     console.log(`[CHECK_AVAILABILITY] Requested time: ${calendarDateTime.toISO()} (${calendarDateTime.toFormat("h:mm a")})`);
 
     // Check if requested time is in the list of free slots (1-minute tolerance)
@@ -176,11 +194,9 @@ async function handleCheckCalendarAvailability(toolCall, event) {
     let isAvailable = false;
 
     for (const slotStr of freeSlots) {
-      // Parse the free slot time (format: "2025-11-04T09:00:00-05:00")
       const freeSlot = DateTime.fromISO(slotStr, { zone: CALENDAR_TIMEZONE });
       const diff = Math.abs(freeSlot.toMillis() - requestedStartMs);
 
-      // CRITICAL: 1-minute tolerance (60000ms) for exact matching
       if (diff < 60000) {
         isAvailable = true;
         break;
