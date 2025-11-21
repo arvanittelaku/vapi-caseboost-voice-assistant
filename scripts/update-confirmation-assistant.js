@@ -32,12 +32,12 @@ async function updateConfirmationAssistant() {
     console.log(`📋 Assistant ID: ${CONFIRMATION_ASSISTANT_ID}`);
     
     // Prepare assistant update payload
+    // Note: System prompt needs to be updated manually in Vapi UI (API doesn't support it yet)
     const updatePayload = {
       name: CONFIRMATION_CONFIG.name,
       model: CONFIRMATION_CONFIG.model,
       voice: CONFIRMATION_CONFIG.voice,
       firstMessage: CONFIRMATION_CONFIG.firstMessage,
-      systemPrompt: CONFIRMATION_CONFIG.systemPrompt,
       endCallMessage: CONFIRMATION_CONFIG.endCallMessage,
       endCallPhrases: CONFIRMATION_CONFIG.endCallPhrases,
       maxDurationSeconds: CONFIRMATION_CONFIG.maxDurationSeconds,
@@ -46,27 +46,18 @@ async function updateConfirmationAssistant() {
       silenceTimeoutSeconds: CONFIRMATION_CONFIG.silenceTimeoutSeconds,
       serverUrl: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi",
       serverUrlSecret: process.env.VAPI_SERVER_SECRET || "",
+      tools: CONFIRMATION_CONFIG.tools, // Include tools in main payload
     };
+    
+    console.log('\n📝 NOTE: System prompt must be updated manually in Vapi UI');
+    console.log('   The system prompt is ready in: src/config/confirmation-assistant.config.js');
     
     // Update assistant
     const response = await vapiClient.patch(`/assistant/${CONFIRMATION_ASSISTANT_ID}`, updatePayload);
     console.log('✅ Assistant updated successfully!');
     console.log(`   Name: ${response.data.name}`);
     console.log(`   ID: ${response.data.id}`);
-    
-    // Update tools separately
-    console.log('\n🔧 Updating tools...');
-    
-    for (const tool of CONFIRMATION_CONFIG.tools) {
-      console.log(`   Adding tool: ${tool.function.name}`);
-    }
-    
-    const toolsPayload = {
-      tools: CONFIRMATION_CONFIG.tools
-    };
-    
-    await vapiClient.patch(`/assistant/${CONFIRMATION_ASSISTANT_ID}`, toolsPayload);
-    console.log('✅ Tools updated successfully!');
+    console.log(`   Tools configured: ${CONFIRMATION_CONFIG.tools.length}`);
     
     // Assign phone number to assistant
     console.log('\n📞 Assigning phone number to assistant...');
