@@ -117,25 +117,59 @@ async function handleCheckCalendarAvailability(toolCall, event) {
 
     // Parse the date (without time first)
     const now = DateTime.now().setZone(timezone);
-    let targetDate = now;
+    let targetDate = null;
     
     const dateLower = String(requestedDate || '').toLowerCase();
+    
+    console.log(`[CHECK_AVAILABILITY] Parsing date: "${requestedDate}"`);
+    
+    // Try different date formats
     if (dateLower.includes("today")) {
       targetDate = now;
+      console.log(`[CHECK_AVAILABILITY] Matched "today"`);
     } else if (dateLower.includes("tomorrow")) {
       targetDate = now.plus({ days: 1 });
+      console.log(`[CHECK_AVAILABILITY] Matched "tomorrow"`);
     } else if (/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+      // YYYY-MM-DD format
       targetDate = DateTime.fromISO(requestedDate, { zone: timezone });
+      console.log(`[CHECK_AVAILABILITY] Matched YYYY-MM-DD format`);
+    } else {
+      // Try various date formats
+      const formats = [
+        "d MMMM",      // 22 December
+        "MMMM d",      // December 22
+        "d MMM",       // 22 Dec
+        "MMM d",       // Dec 22
+        "MMMM d, yyyy", // December 22, 2025
+        "d MMMM yyyy", // 22 December 2025
+      ];
+      
+      for (const format of formats) {
+        targetDate = DateTime.fromFormat(requestedDate, format, { zone: timezone });
+        if (targetDate.isValid) {
+          console.log(`[CHECK_AVAILABILITY] Matched format: ${format}`);
+          // If year is not specified, assume current year or next year
+          if (!format.includes('yyyy')) {
+            if (targetDate < now) {
+              targetDate = targetDate.plus({ years: 1 });
+              console.log(`[CHECK_AVAILABILITY] Date in past, adding 1 year`);
+            }
+          }
+          break;
+        }
+      }
     }
 
-    if (!targetDate.isValid) {
+    if (!targetDate || !targetDate.isValid) {
+      console.log(`[CHECK_AVAILABILITY] ❌ Failed to parse date: "${requestedDate}"`);
       return {
         available: false,
-        message: `I couldn't understand that date. Could you say it differently? For example: "today", "tomorrow", or a specific date.`,
+        message: `I couldn't understand that date. Could you say it differently? For example: "today", "tomorrow", "December 22", or "2025-12-22"`,
       };
     }
 
-    console.log(`[CHECK_AVAILABILITY] Parsed date as: ${targetDate.toISO()}`);
+    console.log(`[CHECK_AVAILABILITY] ✅ Parsed date as: ${targetDate.toISO()} (${targetDate.toFormat("EEEE, MMMM d, yyyy")})`);
 
     // Fetch free slots from GHL for the entire day
     const dateStr = targetDate.toISODate();
