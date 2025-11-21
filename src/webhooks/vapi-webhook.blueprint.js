@@ -442,6 +442,8 @@ function parseUserDateTime(dateStr, timeStr, timezone) {
   }
 
   const now = DateTime.now().setZone(timezone);
+  console.log(`[PARSE_DATE] Parsing: "${dateStr}" + "${timeStr}" in ${timezone}`);
+  console.log(`[PARSE_DATE] Current time: ${now.toISO()}`);
 
   // Handle relative dates and specific date formats
   let targetDate = null;
@@ -450,11 +452,14 @@ function parseUserDateTime(dateStr, timeStr, timezone) {
 
   if (dateLower.includes("today")) {
     targetDate = now;
+    console.log(`[PARSE_DATE] Matched: today`);
   } else if (dateLower.includes("tomorrow")) {
     targetDate = now.plus({ days: 1 });
+    console.log(`[PARSE_DATE] Matched: tomorrow`);
   } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     // YYYY-MM-DD format
     targetDate = DateTime.fromISO(dateStr, { zone: timezone });
+    console.log(`[PARSE_DATE] Matched: YYYY-MM-DD format`);
   } else if (dateLower.includes("monday") || dateLower.includes("tuesday") || 
              dateLower.includes("wednesday") || dateLower.includes("thursday") || 
              dateLower.includes("friday")) {
@@ -464,25 +469,32 @@ function parseUserDateTime(dateStr, timeStr, timezone) {
     if (weekdayIndex !== -1) {
       targetDate = now.set({ weekday: weekdayIndex + 1 });
       if (targetDate < now) targetDate = targetDate.plus({ weeks: 1 });
+      console.log(`[PARSE_DATE] Matched: weekday name`);
     }
   } else {
     // Try various date formats (e.g., "24 November", "December 22")
     const formats = [
-      "d MMMM",      // 22 December
-      "MMMM d",      // December 22
-      "d MMM",       // 22 Dec
-      "MMM d",       // Dec 22
-      "MMMM d, yyyy", // December 22, 2025
-      "d MMMM yyyy", // 22 December 2025
+      "d MMMM",      // 24 November
+      "MMMM d",      // November 24
+      "d MMM",       // 24 Nov
+      "MMM d",       // Nov 24
+      "MMMM d, yyyy", // November 24, 2025
+      "d MMMM yyyy", // 24 November 2025
     ];
+    
+    console.log(`[PARSE_DATE] Trying format parsing for: "${dateStr}"`);
     
     for (const format of formats) {
       targetDate = DateTime.fromFormat(dateStr, format, { zone: timezone });
+      console.log(`[PARSE_DATE] Format "${format}": ${targetDate.isValid ? 'VALID' : 'invalid'} - ${targetDate.toISO()}`);
       if (targetDate.isValid) {
+        console.log(`[PARSE_DATE] Matched format: ${format}`);
         // If year is not specified, assume current year or next year
         if (!format.includes('yyyy')) {
+          console.log(`[PARSE_DATE] Checking if date is in past...`);
           if (targetDate < now) {
             targetDate = targetDate.plus({ years: 1 });
+            console.log(`[PARSE_DATE] Date was in past, added 1 year: ${targetDate.toISO()}`);
           }
         }
         break;
@@ -491,8 +503,11 @@ function parseUserDateTime(dateStr, timeStr, timezone) {
   }
 
   if (!targetDate || !targetDate.isValid) {
+    console.log(`[PARSE_DATE] ❌ Failed to parse date!`);
     return DateTime.invalid("Unable to parse date");
   }
+  
+  console.log(`[PARSE_DATE] Final parsed date: ${targetDate.toISO()}`);
 
   // Parse time
   const timeFormats = ["h:mm a", "h a", "ha", "HH:mm"];
