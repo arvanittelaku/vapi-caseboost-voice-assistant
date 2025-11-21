@@ -142,8 +142,12 @@ app.get("/debug-ghl-slots", async (req, res) => {
     const startDate = targetDate.toMillis();  // Unix timestamp in milliseconds
     const endDate = targetDate.endOf('day').toMillis();  // Unix timestamp in milliseconds
     
+    // Try WITHOUT userId to see if that's causing the filtering issue
     let url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
-    if (userId) {
+    
+    // Add userId as query param to toggle it on/off
+    const includeUserId = req.query.includeUserId !== 'false';
+    if (userId && includeUserId) {
       url += `&userId=${userId}`;
     }
     
