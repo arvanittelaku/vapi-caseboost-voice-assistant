@@ -164,6 +164,13 @@ async function handleCheckCalendarAvailability(toolCall, event) {
       CALENDAR_TIMEZONE
     );
 
+    console.log(`[CHECK_AVAILABILITY] Free slots returned by GHL:`);
+    freeSlots.forEach((slot, index) => {
+      const slotTime = DateTime.fromISO(slot, { zone: CALENDAR_TIMEZONE });
+      console.log(`  ${index + 1}. ${slot} (${slotTime.toFormat("h:mm a")})`);
+    });
+    console.log(`[CHECK_AVAILABILITY] Requested time: ${calendarDateTime.toISO()} (${calendarDateTime.toFormat("h:mm a")})`);
+
     // Check if requested time is in the list of free slots (1-minute tolerance)
     const requestedStartMs = calendarDateTime.toMillis();
     let isAvailable = false;
@@ -263,11 +270,21 @@ async function handleBookCalendarAppointment(toolCall, event) {
       CALENDAR_TIMEZONE
     );
 
+    console.log(`[BOOK_APPOINTMENT] Free slots returned by GHL:`);
+    freeSlots.forEach((slot, index) => {
+      const slotTime = DateTime.fromISO(slot, { zone: CALENDAR_TIMEZONE });
+      console.log(`  ${index + 1}. ${slot} (${slotTime.toFormat("h:mm a")})`);
+    });
+    console.log(`[BOOK_APPOINTMENT] Requested time: ${calendarDateTime.toISO()} (${calendarDateTime.toFormat("h:mm a")})`);
+    console.log(`[BOOK_APPOINTMENT] Requested timestamp: ${startTimeMs}`);
+
     // Check if requested time is in the list of free slots
     let isAvailable = false;
     for (const slotStr of freeSlots) {
       const freeSlot = DateTime.fromISO(slotStr, { zone: CALENDAR_TIMEZONE });
       const diff = Math.abs(freeSlot.toMillis() - startTimeMs);
+
+      console.log(`  Comparing: ${freeSlot.toISO()} (${freeSlot.toMillis()}) vs requested (${startTimeMs}), diff: ${diff}ms`);
 
       if (diff < 60000) {
         isAvailable = true;
