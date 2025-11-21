@@ -57,9 +57,58 @@ app.get("/debug-env", (req, res) => {
     GHL_CALENDAR_ID: process.env.GHL_CALENDAR_ID,
     GHL_LOCATION_ID: process.env.GHL_LOCATION_ID,
     GHL_API_KEY_PREFIX: process.env.GHL_API_KEY?.substring(0, 20) + "...",
+    GHL_USER_ID: process.env.GHL_USER_ID || "Not set",
     CALENDAR_TIMEZONE: process.env.CALENDAR_TIMEZONE || "America/New_York",
     NODE_ENV: process.env.NODE_ENV,
   });
+});
+
+// Debug endpoint to get GHL users/team members
+app.get("/debug-ghl-users", async (req, res) => {
+  try {
+    const locationId = process.env.GHL_LOCATION_ID;
+    const url = `https://services.leadconnectorhq.com/users/?locationId=${locationId}`;
+    
+    console.log("\n=== DEBUG GHL USERS ===");
+    console.log("Request URL:", url);
+    console.log("Location ID:", locationId);
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+        Version: "2021-07-28",
+        "Content-Type": "application/json",
+      },
+    });
+    
+    const responseText = await response.text();
+    console.log("Response Status:", response.status);
+    console.log("Response Body:", responseText);
+    console.log("======================\n");
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      data = { raw: responseText };
+    }
+    
+    res.json({
+      request: {
+        url,
+        locationId,
+      },
+      response: {
+        status: response.status,
+        statusText: response.statusText,
+        data,
+      },
+    });
+  } catch (error) {
+    console.error("Error in debug-ghl-users:", error);
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
 });
 
 // Debug endpoint to check GHL slots API response
