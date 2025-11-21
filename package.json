@@ -5,7 +5,8 @@
   "main": "src/index.blueprint.js",
   "scripts": {
     "start": "node src/index.blueprint.js",
-    "dev": "node src/index.blueprint.js > server.log 2>&1"
+    "dev": "node src/index.blueprint.js > server.log 2>&1",
+    "update-confirmation": "node scripts/update-confirmation-assistant.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
