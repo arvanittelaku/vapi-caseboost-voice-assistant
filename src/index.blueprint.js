@@ -70,10 +70,11 @@ app.get("/debug-ghl-slots", async (req, res) => {
     const locationId = process.env.GHL_LOCATION_ID;
     const timezone = process.env.CALENDAR_TIMEZONE || "America/New_York";
     
-    // Get tomorrow's date and convert to Unix timestamps (like the actual code does)
-    const tomorrow = DateTime.now().setZone(timezone).plus({ days: 1 }).startOf('day');
-    const startDate = tomorrow.toMillis();  // Unix timestamp in milliseconds
-    const endDate = tomorrow.endOf('day').toMillis();  // Unix timestamp in milliseconds
+    // Get the date to check (use query param or default to Dec 24, 2025)
+    const dateParam = req.query.date || "2025-12-24";
+    const targetDate = DateTime.fromISO(dateParam, { zone: timezone }).startOf('day');
+    const startDate = targetDate.toMillis();  // Unix timestamp in milliseconds
+    const endDate = targetDate.endOf('day').toMillis();  // Unix timestamp in milliseconds
     
     const url = `https://services.leadconnectorhq.com/calendars/${calendarId}/free-slots?startDate=${startDate}&endDate=${endDate}&timezone=${encodeURIComponent(timezone)}`;
     
@@ -82,9 +83,9 @@ app.get("/debug-ghl-slots", async (req, res) => {
     console.log("Calendar ID:", calendarId);
     console.log("Location ID:", locationId);
     console.log("Timezone:", timezone);
-    console.log("Date (readable):", tomorrow.toFormat("yyyy-MM-dd"));
-    console.log("Start Timestamp:", startDate, "(" + tomorrow.toISO() + ")");
-    console.log("End Timestamp:", endDate, "(" + tomorrow.endOf('day').toISO() + ")");
+    console.log("Date (readable):", targetDate.toFormat("yyyy-MM-dd"));
+    console.log("Start Timestamp:", startDate, "(" + targetDate.toISO() + ")");
+    console.log("End Timestamp:", endDate, "(" + targetDate.endOf('day').toISO() + ")");
     
     const response = await fetch(url, {
       method: "GET",
@@ -125,11 +126,11 @@ app.get("/debug-ghl-slots", async (req, res) => {
         calendarId,
         locationId,
         timezone,
-        date: tomorrow.toFormat("yyyy-MM-dd"),
+        date: targetDate.toFormat("yyyy-MM-dd"),
         startDate,
         endDate,
-        startDateReadable: tomorrow.toISO(),
-        endDateReadable: tomorrow.endOf('day').toISO(),
+        startDateReadable: targetDate.toISO(),
+        endDateReadable: targetDate.endOf('day').toISO(),
       },
       response: {
         status: response.status,
