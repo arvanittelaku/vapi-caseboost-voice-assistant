@@ -105,7 +105,12 @@ async function handleVAPIWebhook(req, res) {
  */
 async function handleCheckCalendarAvailability(toolCall, event) {
   try {
-    const params = toolCall.function.arguments;
+    // Parse arguments if they're a string
+    let params = toolCall.function.arguments;
+    if (typeof params === 'string') {
+      params = JSON.parse(params);
+    }
+    
     // Support both parameter naming conventions
     const requestedDate = params.requestedDate || params.date;
     const requestedTime = params.requestedTime || params.time;
@@ -280,14 +285,19 @@ async function handleCheckCalendarAvailability(toolCall, event) {
  */
 async function handleBookCalendarAppointment(toolCall, event) {
   try {
-    const params = toolCall.function.arguments;
+    // Parse arguments if they're a string
+    let params = toolCall.function.arguments;
+    if (typeof params === 'string') {
+      params = JSON.parse(params);
+    }
+    
     // Support both parameter naming conventions
     const bookingDate = params.bookingDate || params.date;
     const bookingTime = params.bookingTime || params.time;
     const timezone = params.timezone;
-    const fullName = params.fullName || params.name;
-    const email = params.email;
-    const phone = params.phone;
+    const fullName = params.fullName || params.name || params.contactName;
+    const email = params.email || params.contactEmail;
+    const phone = params.phone || params.contactPhone;
 
     console.log(`[BOOK_APPOINTMENT] Booking for: ${fullName} (${email})`);
     console.log(
