@@ -6,6 +6,7 @@ const vapiWebhookHandler = require("./webhooks/vapi-webhook.blueprint");
 const ghlRetryWebhookHandler = require("./webhooks/ghl-retry-webhook.blueprint");
 const ghlInitialCallHandler = require("./webhooks/ghl-initial-call-webhook.blueprint");
 const appointmentWebhooks = require("./webhooks/appointment-webhooks.blueprint");
+const { handleCalendarWebhook } = require("./webhooks/calendar-webhook");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -298,6 +299,10 @@ app.post("/webhook/ghl-initial-call", ghlInitialCallHandler);
 app.post("/webhook/ghl-retry", ghlRetryWebhookHandler);
 
 // Appointment management webhooks (called by VAPI function tools)
+// Unified calendar webhook handler (NEW - handles all 3 confirmation tools)
+app.post("/webhook/vapi/calendar", handleCalendarWebhook);
+
+// Legacy individual endpoints (kept for backwards compatibility)
 app.post("/webhook/update-appointment-status", appointmentWebhooks.handleUpdateAppointmentStatus);
 app.post("/webhook/check-availability", appointmentWebhooks.handleCheckAvailability);
 app.post("/webhook/book-appointment", appointmentWebhooks.handleBookNewAppointment);

@@ -32,7 +32,7 @@ async function updateConfirmationAssistant() {
     console.log(`📋 Assistant ID: ${CONFIRMATION_ASSISTANT_ID}`);
     
     // Prepare assistant update payload
-    // Note: System prompt needs to be updated manually in Vapi UI (API doesn't support it yet)
+    // Note: System prompt and tools need to be updated manually in Vapi UI (API limitation)
     const updatePayload = {
       name: CONFIRMATION_CONFIG.name,
       model: CONFIRMATION_CONFIG.model,
@@ -45,12 +45,13 @@ async function updateConfirmationAssistant() {
       backchannelingEnabled: CONFIRMATION_CONFIG.backchannelingEnabled,
       silenceTimeoutSeconds: CONFIRMATION_CONFIG.silenceTimeoutSeconds,
       serverUrl: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi",
-      serverUrlSecret: process.env.VAPI_SERVER_SECRET || "",
-      tools: CONFIRMATION_CONFIG.tools, // Include tools in main payload
+      serverUrlSecret: process.env.VAPI_SERVER_SECRET || ""
+      // Note: tools cannot be updated via API - must be done in Vapi UI
     };
     
-    console.log('\n📝 NOTE: System prompt must be updated manually in Vapi UI');
-    console.log('   The system prompt is ready in: src/config/confirmation-assistant.config.js');
+    console.log('\n📝 IMPORTANT: Some settings must be updated manually in Vapi UI:');
+    console.log('   1. System prompt (copy from src/config/confirmation-assistant.config.js)');
+    console.log('   2. Tools (see instructions below)');
     
     // Update assistant
     const response = await vapiClient.patch(`/assistant/${CONFIRMATION_ASSISTANT_ID}`, updatePayload);
@@ -74,14 +75,22 @@ async function updateConfirmationAssistant() {
       console.log('   You may need to assign it manually in the Vapi dashboard');
     }
     
-    console.log('\n✅ Configuration complete!');
-    console.log('\n📋 Summary:');
-    console.log(`   Assistant ID: ${CONFIRMATION_ASSISTANT_ID}`);
-    console.log(`   Phone Number ID: ${CONFIRMATION_PHONE_NUMBER_ID}`);
-    console.log(`   Tools: ${CONFIRMATION_CONFIG.tools.length}`);
-    console.log(`   - update_appointment_status_caseboost`);
-    console.log(`   - check_calendar_availability_caseboost`);
-    console.log(`   - book_calendar_appointment_caseboost`);
+    console.log('\n✅ Assistant basic settings updated!');
+    console.log('\n⚠️  NEXT STEP: Update tools manually in Vapi UI');
+    console.log('   Tools must be configured in the Vapi dashboard because the API doesn\'t support them yet.');
+    console.log('\n📋 Required Tools (3):');
+    console.log(`   1. update_appointment_status_caseboost`);
+    console.log(`   2. check_calendar_availability_caseboost`);
+    console.log(`   3. book_calendar_appointment_caseboost`);
+    console.log('\n🔗 Tool Configuration:');
+    console.log(`   Server URL: ${process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com"}/webhook/vapi/calendar`);
+    console.log('   Tool definitions are in: src/config/confirmation-assistant.config.js');
+    console.log('\n💡 Instructions:');
+    console.log('   1. Go to: https://dashboard.vapi.ai');
+    console.log(`   2. Open assistant: ${CONFIRMATION_ASSISTANT_ID}`);
+    console.log('   3. Scroll to "Tools" section');
+    console.log('   4. For each tool, set the server URL to the one shown above');
+    console.log('   5. Copy tool parameters from confirmation-assistant.config.js');
     
   } catch (error) {
     console.error('❌ Error updating assistant:', error.response?.data || error.message);

@@ -149,7 +149,7 @@ Professional, warm, helpful, and efficient. Speak naturally like a real person.`
       },
       async: false,
       server: {
-        url: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi"
+        url: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi/calendar"
       }
     },
     {
@@ -179,7 +179,7 @@ Professional, warm, helpful, and efficient. Speak naturally like a real person.`
       },
       async: false,
       server: {
-        url: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi"
+        url: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi/calendar"
       }
     },
     {
@@ -220,7 +220,7 @@ Professional, warm, helpful, and efficient. Speak naturally like a real person.`
       },
       async: false,
       server: {
-        url: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi"
+        url: process.env.SERVER_URL || "https://vapi-caseboost-voice-assistant.onrender.com/webhook/vapi/calendar"
       }
     }
   ],

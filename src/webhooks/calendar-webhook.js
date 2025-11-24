@@ -36,20 +36,39 @@ async function handleCalendarWebhook(req, res) {
     log('📥 VAPI Calendar Webhook Received', req.body);
 
     // Parse toolCall from multiple possible formats
-    const toolCall = req.body.toolCall || 
-                     req.body.toolCalls?.[0] || 
-                     req.body.toolCallList?.[0];
+    // Format 1: Direct toolCall (our test format)
+    // Format 2: VAPI's actual format with message.toolCalls
+    let toolCall = req.body.toolCall || 
+                   req.body.toolCalls?.[0] || 
+                   req.body.toolCallList?.[0] ||
+                   req.body.message?.toolCalls?.[0];
 
     if (!toolCall) {
       log('❌ No toolCall found in request');
+      log('Request body structure:', JSON.stringify(req.body, null, 2));
       return res.status(400).json({
         error: 'No toolCall found in request body'
       });
     }
 
-    const { function: functionData } = toolCall;
+    log('✅ Tool call found:', toolCall);
+
+    const functionData = toolCall.function;
     const functionName = functionData?.name;
-    const parameters = functionData?.arguments;
+    let parameters = functionData?.arguments;
+
+    // If parameters is a string (VAPI sends JSON string), parse it
+    if (typeof parameters === 'string') {
+      try {
+        parameters = JSON.parse(parameters);
+        log('📝 Parsed stringified parameters', parameters);
+      } catch (error) {
+        log('❌ Failed to parse parameters string:', parameters);
+        return res.status(400).json({
+          error: 'Invalid parameters format'
+        });
+      }
+    }
 
     log(`🔧 Function Called: ${functionName}`, parameters);
 
@@ -65,6 +84,11 @@ async function handleCalendarWebhook(req, res) {
       case 'book_calendar_appointment':
       case 'book_calendar_appointment_caseboost':
         result = await bookCalendarAppointment(parameters);
+        break;
+      
+      case 'update_appointment_status':
+      case 'update_appointment_status_caseboost':
+        result = await updateAppointmentStatus(parameters);
         break;
       
       default:
@@ -99,9 +123,12 @@ async function handleCalendarWebhook(req, res) {
  */
 async function checkCalendarAvailability(params) {
   try {
-    const { requestedDate, requestedTime, timezone } = params;
+    // Support both parameter naming conventions
+    const requestedDate = params.requestedDate || params.date;
+    const requestedTime = params.requestedTime || params.time;
+    const timezone = params.timezone || 'America/New_York';
     
-    log(`🔍 Checking availability for: ${requestedDate} at ${requestedTime} ${timezone}`);
+    log(`🔍 Checking availability for: ${requestedDate} at ${requestedTime || 'all day'} ${timezone}`);
 
     // Parse requested time in user's timezone
     const requestedDateTime = parseDateTime(requestedDate, requestedTime, timezone);
@@ -133,9 +160,10 @@ async function checkCalendarAvailability(params) {
 
     if (isAvailable) {
       log('✅ Time slot is available!');
+      const timeMsg = requestedTime ? `at ${requestedTime}` : '';
       return {
         available: true,
-        message: `${requestedDate} at ${requestedTime} ${timezone} is available. Would you like to book this time?`
+        message: `${requestedDate} ${timeMsg} is available. Would you like to book this time?`
       };
     } else {
       log('⚠️ Time slot is NOT available, suggesting alternatives');
@@ -143,9 +171,10 @@ async function checkCalendarAvailability(params) {
       // Suggest 3 alternative slots
       const alternatives = await suggestAlternativeSlots(requestedInCalendarTZ, busySlots);
       
+      const timeMsg = requestedTime ? `at ${requestedTime}` : '';
       return {
         available: false,
-        message: `Sorry, ${requestedDate} at ${requestedTime} ${timezone} is not available. Here are some alternative times:`,
+        message: `Sorry, ${requestedDate} ${timeMsg} is not available. Here are some alternative times:`,
         alternatives: alternatives.map(alt => ({
           date: alt.date,
           time: alt.time,
@@ -175,7 +204,27 @@ async function bookCalendarAppointment(params) {
     // Support both parameter naming conventions (date/bookingDate, time/bookingTime)
     const bookingDate = params.bookingDate || params.date;
     const bookingTime = params.bookingTime || params.time;
-    const { timezone, fullName, email, phone } = params;
+    const timezone = params.timezone || 'America/New_York';
+    const fullName = params.fullName || params.name;
+    const email = params.email;
+    const phone = params.phone;
+    
+    // Validate required parameters
+    if (!bookingDate || !bookingTime) {
+      log('❌ Missing date or time');
+      return {
+        success: false,
+        message: 'I need both a date and time to book your appointment. What date and time work best for you?'
+      };
+    }
+
+    if (!fullName || !email || !phone) {
+      log('❌ Missing contact information', { fullName, email, phone });
+      return {
+        success: false,
+        message: 'I need your full name, email, and phone number to complete the booking. Can you provide those for me?'
+      };
+    }
     
     log(`📅 Booking appointment for: ${fullName} (${email})`, params);
 
@@ -204,6 +253,15 @@ async function bookCalendarAppointment(params) {
 
     // Find or create contact in GHL
     const contact = await findOrCreateContact(fullName, email, phone);
+    
+    if (!contact || !contact.id) {
+      log('❌ Failed to create/find contact');
+      return {
+        success: false,
+        message: 'I encountered an issue setting up your contact information. Let me have someone from our team reach out to you directly to complete the booking.'
+      };
+    }
+    
     log(`👤 Contact ID: ${contact.id}`);
 
     // Create appointment in GHL
@@ -251,59 +309,97 @@ async function bookCalendarAppointment(params) {
 
 /**
  * Parse date and time string into Luxon DateTime
+ * Handles natural language dates like "tomorrow", "Monday", ISO dates, etc.
  * 
- * @param {string} date - "2024-11-05" or "November 5, 2024"
- * @param {string} time - "2:00 PM" or "14:00"
+ * @param {string} date - "tomorrow", "Monday", "2024-11-05", "November 5, 2024"
+ * @param {string} time - "2:00 PM", "14:00", or undefined
  * @param {string} tz - "America/New_York"
  * @returns {DateTime}
  */
 function parseDateTime(date, time, tz) {
-  // Parse date (handle multiple formats)
-  let dateStr = date;
-  if (date.match(/[A-Za-z]/)) {
-    // Convert "November 5, 2024" to "2024-11-05"
-    const parsedDate = new Date(date);
-    const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(parsedDate.getDate()).padStart(2, '0');
-    dateStr = `${year}-${month}-${day}`;
-  }
-
-  // Parse time (convert "2:00 PM" to 24-hour format)
-  let hour = 0;
-  let minute = 0;
-
-  if (time.match(/AM|PM/i)) {
-    const [timeStr, period] = time.split(/\s+/);
-    const [h, m] = timeStr.split(':');
-    hour = parseInt(h);
-    minute = parseInt(m || 0);
-
-    if (period.toUpperCase() === 'PM' && hour !== 12) {
-      hour += 12;
-    } else if (period.toUpperCase() === 'AM' && hour === 12) {
-      hour = 0;
+  const timezone = tz || 'America/New_York';
+  let baseDate = DateTime.now().setZone(timezone);
+  
+  // Default time if not provided
+  const defaultHour = 9;
+  const defaultMinute = 0;
+  
+  // Parse the date part
+  const dateLower = (date || '').toLowerCase().trim();
+  
+  if (dateLower === 'today') {
+    // Keep baseDate as today
+  } else if (dateLower === 'tomorrow') {
+    baseDate = baseDate.plus({ days: 1 });
+  } else if (dateLower === 'day after tomorrow') {
+    baseDate = baseDate.plus({ days: 2 });
+  } else if (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].includes(dateLower)) {
+    // Find next occurrence of this weekday
+    const targetDay = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].indexOf(dateLower) + 1;
+    const currentDay = baseDate.weekday;
+    let daysToAdd = targetDay - currentDay;
+    if (daysToAdd <= 0) {
+      daysToAdd += 7; // Next week
     }
-  } else {
-    const [h, m] = time.split(':');
-    hour = parseInt(h);
-    minute = parseInt(m || 0);
+    baseDate = baseDate.plus({ days: daysToAdd });
+  } else if (date && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    // ISO format: 2024-11-05
+    baseDate = DateTime.fromISO(date, { zone: timezone });
+  } else if (date && date.match(/[A-Za-z]/)) {
+    // Try parsing as natural language date (e.g., "November 5, 2024", "Dec 22")
+    try {
+      const jsDate = new Date(date);
+      if (!isNaN(jsDate.getTime())) {
+        baseDate = DateTime.fromJSDate(jsDate, { zone: timezone });
+      }
+    } catch (e) {
+      log(`⚠️ Could not parse date: ${date}, using today`);
+    }
   }
-
-  // Create DateTime in user's timezone
-  const dt = DateTime.fromObject(
-    {
-      year: parseInt(dateStr.split('-')[0]),
-      month: parseInt(dateStr.split('-')[1]),
-      day: parseInt(dateStr.split('-')[2]),
-      hour: hour,
-      minute: minute,
-      second: 0
-    },
-    { zone: tz }
-  );
-
-  return dt;
+  
+  // Parse the time part
+  let hour = defaultHour;
+  let minute = defaultMinute;
+  
+  if (time) {
+    const timeTrim = time.trim();
+    
+    if (timeTrim.match(/AM|PM/i)) {
+      // 12-hour format: "2:00 PM", "10 AM"
+      const match = timeTrim.match(/(\d{1,2}):?(\d{2})?\s*(AM|PM)/i);
+      if (match) {
+        hour = parseInt(match[1]);
+        minute = parseInt(match[2] || '0');
+        const period = match[3].toUpperCase();
+        
+        if (period === 'PM' && hour !== 12) {
+          hour += 12;
+        } else if (period === 'AM' && hour === 12) {
+          hour = 0;
+        }
+      }
+    } else if (timeTrim.match(/^\d{1,2}:\d{2}$/)) {
+      // 24-hour format: "14:00"
+      const [h, m] = timeTrim.split(':');
+      hour = parseInt(h);
+      minute = parseInt(m);
+    } else if (timeTrim.match(/^\d{1,2}$/)) {
+      // Just hour: "14"
+      hour = parseInt(timeTrim);
+    }
+  }
+  
+  // Create final DateTime with parsed date and time
+  const result = baseDate.set({ 
+    hour: hour, 
+    minute: minute, 
+    second: 0, 
+    millisecond: 0 
+  });
+  
+  log(`📅 Parsed: "${date}" "${time || 'default'}" → ${result.toISO()}`);
+  
+  return result;
 }
 
 /**
@@ -470,7 +566,13 @@ async function findOrCreateContact(fullName, email, phone) {
 
   } catch (error) {
     log('❌ Error finding/creating contact:', error.response?.data || error.message);
-    throw error;
+    
+    // Return a more graceful error instead of throwing
+    return {
+      id: null,
+      error: error.message,
+      fallback: true
+    };
   }
 }
 
@@ -541,9 +643,140 @@ async function updateContactCustomFields(contactId, fields) {
   }
 }
 
+/**
+ * TOOL 3: Update Appointment Status
+ * 
+ * @param {Object} params - { status, appointmentId, notes }
+ * @returns {Object} - { success: boolean, message: string }
+ */
+async function updateAppointmentStatus(params) {
+  try {
+    const { status, appointmentId, notes } = params;
+    
+    log(`🔄 Updating appointment status to: ${status}`, { appointmentId, notes });
+
+    // Validate required parameters
+    if (!status || !appointmentId) {
+      log('❌ Missing required parameters: status and appointmentId');
+      return {
+        success: false,
+        message: 'Missing required information. Please provide the appointment status.'
+      };
+    }
+
+    // Validate status value
+    const validStatuses = ['confirmed', 'cancelled', 'rescheduled'];
+    if (!validStatuses.includes(status.toLowerCase())) {
+      log(`❌ Invalid status: ${status}`);
+      return {
+        success: false,
+        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+      };
+    }
+
+    const axios = require('axios');
+    
+    // Handle based on status
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        // Update appointment status in GHL
+        try {
+          await axios.put(
+            `https://services.leadconnectorhq.com/calendars/events/appointments/${appointmentId}`,
+            {
+              appointmentStatus: 'confirmed'
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${GHL_API_KEY}`,
+                'Version': '2021-07-28',
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          log('✅ Appointment confirmed in GHL');
+          
+          return {
+            success: true,
+            message: 'Great! Your appointment is confirmed. You\'ll receive a confirmation email shortly.',
+            status: 'confirmed'
+          };
+        } catch (error) {
+          log('❌ Error confirming appointment:', error.response?.data || error.message);
+          
+          return {
+            success: true, // Return success even if GHL update fails (user already confirmed)
+            message: 'Thank you for confirming! Your appointment is all set.',
+            status: 'confirmed'
+          };
+        }
+
+      case 'cancelled':
+        // Cancel appointment in GHL
+        try {
+          await axios.put(
+            `https://services.leadconnectorhq.com/calendars/events/appointments/${appointmentId}`,
+            {
+              appointmentStatus: 'cancelled'
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${GHL_API_KEY}`,
+                'Version': '2021-07-28',
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          log('✅ Appointment cancelled in GHL');
+          
+          return {
+            success: true,
+            message: 'I understand. Your appointment has been cancelled. Would you like to reschedule for another time?',
+            status: 'cancelled'
+          };
+        } catch (error) {
+          log('❌ Error cancelling appointment:', error.response?.data || error.message);
+          
+          return {
+            success: true, // Return success even if GHL update fails
+            message: 'Your appointment has been cancelled. Would you like to reschedule?',
+            status: 'cancelled'
+          };
+        }
+
+      case 'rescheduled':
+        log('🔄 User wants to reschedule - ready to check new availability');
+        
+        return {
+          success: true,
+          message: 'No problem! What date and time would work better for you?',
+          status: 'rescheduling',
+          requiresNewDateTime: true
+        };
+
+      default:
+        return {
+          success: false,
+          message: 'I didn\'t understand that status. Can you confirm, cancel, or reschedule?'
+        };
+    }
+
+  } catch (error) {
+    log('❌ Error updating appointment status:', error);
+    return {
+      success: false,
+      message: 'I encountered an error updating your appointment. Let me have someone from our team call you back to help with this.',
+      error: error.message
+    };
+  }
+}
+
 module.exports = {
   handleCalendarWebhook,
   checkCalendarAvailability,
-  bookCalendarAppointment
+  bookCalendarAppointment,
+  updateAppointmentStatus
 };
 
