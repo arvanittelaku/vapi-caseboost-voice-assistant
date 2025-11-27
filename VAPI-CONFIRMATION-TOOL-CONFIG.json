@@ -1,0 +1,37 @@
+{
+  "name": "report_confirmation_outcome",
+  "description": "Report the outcome of the appointment confirmation call. Call this function when the customer confirms, reschedules, cancels, or if you reached voicemail/no answer.",
+  "type": "function",
+  "function": {
+    "name": "report_confirmation_outcome",
+    "description": "Report the outcome of the appointment confirmation call",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": ["confirmed", "rescheduled", "cancelled", "no_answer"],
+          "description": "The outcome of the confirmation call: confirmed (customer confirmed they'll attend), rescheduled (customer wants to change the time), cancelled (customer wants to cancel), no_answer (reached voicemail or no answer)"
+        },
+        "newAppointmentTime": {
+          "type": "string",
+          "description": "The new appointment time if customer requested reschedule (e.g., 'Tomorrow at 2:00 PM EST', 'Monday December 2nd at 10:00 AM'). Required only for 'rescheduled' outcome."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes about the call (e.g., customer's reason for cancellation, special requests, etc.)"
+        }
+      },
+      "required": ["outcome"]
+    }
+  },
+  "server": {
+    "url": "https://your-server-url.com/webhook/confirmation-outcome",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "async": false
+}
+

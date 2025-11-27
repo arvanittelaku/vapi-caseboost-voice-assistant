@@ -7,6 +7,7 @@ const ghlRetryWebhookHandler = require("./webhooks/ghl-retry-webhook.blueprint")
 const ghlInitialCallHandler = require("./webhooks/ghl-initial-call-webhook.blueprint");
 const appointmentWebhooks = require("./webhooks/appointment-webhooks.blueprint");
 const { handleCalendarWebhook } = require("./webhooks/calendar-webhook");
+const { handleConfirmationOutcome } = require("./webhooks/confirmation-outcome-webhook");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
       updateAppointmentStatus: "POST /webhook/update-appointment-status",
       checkAvailability: "POST /webhook/check-availability",
       bookAppointment: "POST /webhook/book-appointment",
+      confirmationOutcome: "POST /webhook/confirmation-outcome",
     },
     documentation: "API server for VAPI voice assistant with GHL integration",
   });
@@ -306,6 +308,9 @@ app.post("/webhook/vapi/calendar", handleCalendarWebhook);
 app.post("/webhook/update-appointment-status", appointmentWebhooks.handleUpdateAppointmentStatus);
 app.post("/webhook/check-availability", appointmentWebhooks.handleCheckAvailability);
 app.post("/webhook/book-appointment", appointmentWebhooks.handleBookNewAppointment);
+
+// Confirmation outcome webhook (triggers SMS workflows in GHL)
+app.post("/webhook/confirmation-outcome", handleConfirmationOutcome);
 
 // Debug endpoint to check appointments for a specific date
 app.get("/debug-check-appointments", async (req, res) => {
