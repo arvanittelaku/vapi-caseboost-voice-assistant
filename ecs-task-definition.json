@@ -1,0 +1,118 @@
+{
+  "family": "vapi-caseboost-assistant",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "vapi-assistant",
+      "image": "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/vapi-caseboost-assistant:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "CALENDAR_TIMEZONE",
+          "value": "America/New_York"
+        },
+        {
+          "name": "BOOKING_LINK_BASE",
+          "value": "https://calendly.com/caseboost/consultation"
+        },
+        {
+          "name": "COMPANY_PHONE",
+          "value": "02039673689"
+        },
+        {
+          "name": "COMPANY_EMAIL",
+          "value": "contact@caseboost.co.uk"
+        },
+        {
+          "name": "COMPANY_WEBSITE",
+          "value": "https://caseboost.co.uk"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "VAPI_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:vapi/api-key-XXXXX"
+        },
+        {
+          "name": "VAPI_ASSISTANT_ID",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:vapi/assistant-id-XXXXX"
+        },
+        {
+          "name": "VAPI_PHONE_NUMBER_ID",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:vapi/phone-number-id-XXXXX"
+        },
+        {
+          "name": "GHL_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:ghl/api-key-XXXXX"
+        },
+        {
+          "name": "GHL_LOCATION_ID",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:ghl/location-id-XXXXX"
+        },
+        {
+          "name": "GHL_CALENDAR_ID",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:ghl/calendar-id-XXXXX"
+        },
+        {
+          "name": "TWILIO_ACCOUNT_SID",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:twilio/account-sid-XXXXX"
+        },
+        {
+          "name": "TWILIO_AUTH_TOKEN",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:twilio/auth-token-XXXXX"
+        },
+        {
+          "name": "TWILIO_PHONE_NUMBER",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:twilio/phone-number-XXXXX"
+        },
+        {
+          "name": "WEBHOOK_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:webhook/secret-XXXXX"
+        },
+        {
+          "name": "WEBHOOK_BASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:webhook/base-url-XXXXX"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/vapi-caseboost-assistant",
+          "awslogs-region": "<REGION>",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "node -e \"require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})\""
+        ],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 40
+      }
+    }
+  ]
+}
+
